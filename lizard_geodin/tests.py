@@ -6,7 +6,7 @@ from django.test import TestCase
 from lizard_geodin import models
 
 
-class ModelTest(TestCase):
+class ProjectModelTest(TestCase):
 
     def test_project_smoke(self):
         project = models.Project()
@@ -21,3 +21,8 @@ class ModelTest(TestCase):
         project = models.Project.objects.get(slug='slug')
         self.assertEquals(project.metadata['occupation'],
                           'destroyer of lawns')
+
+    def test_absolute_url(self):
+        project = models.Project(slug='slug')
+        self.assertEquals(project.get_absolute_url(),
+                          '/slug/')
