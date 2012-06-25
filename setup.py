@@ -14,6 +14,7 @@ install_requires = [
     'jsonfield',
     'django-nose',
     'lizard-ui >= 4.0b5',
+    'lizard-map',
     ],
 
 setup(name='lizard-geodin',

@@ -40,6 +40,7 @@ DATABASES = {
 SITE_ID = 1
 INSTALLED_APPS = [
     'lizard_geodin',
+    'lizard_map',
     'lizard_ui',
     'staticfiles',
     'compressor',

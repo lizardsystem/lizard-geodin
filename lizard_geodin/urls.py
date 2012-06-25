@@ -4,15 +4,23 @@ from django.conf.urls.defaults import patterns
 from django.conf.urls.defaults import url
 from django.contrib import admin
 
-from lizard_ui.urls import debugmode_urlpatterns
+import lizard_ui.urls
+import lizard_map.urls
+
+from lizard_geodin import views
 
 admin.autodiscover()
 
 urlpatterns = patterns(
     '',
     url(r'^admin/', include(admin.site.urls)),
-    # url(r'^something/',
-    #     direct.import.views.some_method,
-    #     name="name_it"),
+    url(r'^ui/', include(lizard_ui.urls)),
+    url(r'^map/', include(lizard_map.urls)),
+    url(r'^$',
+        views.ProjectsOverview.as_view(),
+        name='lizard_geodin_projects_overview'),
+    url(r'^(?P<slug>[^/]+)/$',
+        views.ProjectView.as_view(),
+        name='lizard_geodin_project_view'),
     )
-urlpatterns += debugmode_urlpatterns()
+urlpatterns += lizard_ui.urls.debugmode_urlpatterns()

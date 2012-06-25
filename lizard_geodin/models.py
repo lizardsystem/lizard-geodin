@@ -1,6 +1,7 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
 from __future__ import unicode_literals
 
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from jsonfield import JSONField
@@ -12,9 +13,8 @@ class Common(models.Model):
         max_length=50,  # Geodin has 40 max.
         null=True,
         blank=True)
-
     slug = models.SlugField(_('slug'))
-
+    # TODO: lizard-security dataset foreign key.
     metadata = JSONField(
         _('metadata'),
         help_text=_("Extra metadata provided by Geodin"),
@@ -31,6 +31,10 @@ class Project(Common):
     class Meta:
         verbose_name = _('project')
         verbose_name_plural = _('projects')
+
+    def get_absolute_url(self):
+        return reverse('lizard_geodin_project_view',
+                       kwargs={'slug': self.slug})
 
 
 class LocationType(Common):

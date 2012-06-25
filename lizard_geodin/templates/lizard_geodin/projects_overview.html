@@ -1,0 +1,16 @@
+{% extends "lizard_ui/lizardbase.html" %}
+
+{% block content %}
+  <div class="textual-content">
+    <h1>{{ view.page_title }}</h1>
+    <ul>
+      {% for project in view.projects %}
+        <li>
+          <a href="{{ project.get_absolute_url }}">
+            {{ project.name }}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endblock content %}
