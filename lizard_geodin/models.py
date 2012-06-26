@@ -29,6 +29,12 @@ class Project(Common):
     """Geodin project, it is the starting point for the API."""
 
     # TODO: field for location of project? For the ProjectsOverview page?
+    source_url = models.URLField(
+        _('source url'),
+        help_text=_(
+            "Geodin URL for automatically loading this project's data."),
+        null=True,
+        blank=True)
 
     class Meta:
         verbose_name = _('project')
