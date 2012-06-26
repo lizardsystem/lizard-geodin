@@ -28,6 +28,8 @@ class Common(models.Model):
 class Project(Common):
     """Geodin project, it is the starting point for the API."""
 
+    # TODO: field for location of project? For the ProjectsOverview page?
+
     class Meta:
         verbose_name = _('project')
         verbose_name_plural = _('projects')
