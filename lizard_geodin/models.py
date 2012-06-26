@@ -1,10 +1,14 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
 from __future__ import unicode_literals
+import logging
 
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from jsonfield import JSONField
+
+
+logger = logging.getLogger(__name__)
 
 
 class Common(models.Model):
@@ -23,6 +27,9 @@ class Common(models.Model):
 
     class Meta:
         abstract = True
+
+    def __unicode__(self):
+        return self.name
 
 
 class Project(Common):
@@ -43,6 +50,12 @@ class Project(Common):
     def get_absolute_url(self):
         return reverse('lizard_geodin_project_view',
                        kwargs={'slug': self.slug})
+
+    def update_from_geodin(self):
+        """Load our data from the Geodin API."""
+        if not self.source_url:
+            raise ValueError("We need a source_url to update ourselves from.")
+        logger.warn("Dummy update from geodin: %s", self.source_url)
 
 
 class LocationType(Common):
