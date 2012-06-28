@@ -11,7 +11,7 @@ long_description = '\n\n'.join([
 install_requires = [
     'Django',
     'django-extensions',
-    'jsonfield',
+    'django-jsonfield >= 0.8.10',
     'django-nose',
     'lizard-ui >= 4.0b5',
     'lizard-map',
