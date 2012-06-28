@@ -32,6 +32,20 @@ class Common(models.Model):
         return self.name
 
 
+class ApiStartingPoint(Common):
+    """Pointer at the Geodin API startpoint."""
+
+    source_url = models.URLField(
+        _('source url'),
+        help_text=_("Geodin URL that lists the available projects."),
+        null=True,
+        blank=True)
+
+    class Meta:
+        verbose_name = _('API starting point')
+        verbose_name_plural = _('API starting points')
+
+
 class Project(Common):
     """Geodin project, it is the starting point for the API."""
 
