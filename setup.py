@@ -13,8 +13,9 @@ install_requires = [
     'django-extensions',
     'django-jsonfield >= 0.8.10',
     'django-nose',
-    'lizard-ui >= 4.1',
     'lizard-map >= 4.1',
+    'lizard-ui >= 4.1',
+    'requests',
     ],
 
 setup(name='lizard-geodin',

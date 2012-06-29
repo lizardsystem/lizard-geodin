@@ -1,12 +1,13 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
 from __future__ import unicode_literals
+import json
 import logging
 
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from jsonfield import JSONField
-
+import requests
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +50,18 @@ class ApiStartingPoint(Common):
         """Load our data from the Geodin API."""
         if not self.source_url:
             raise ValueError("We need a source_url to update ourselves from.")
-        logger.warn("Dummy update from geodin: %s", self.source_url)
+        response = requests.get(self.source_url)
+        if response.json is None:
+            msg = "No json found. HTTP status code was %s, text was \n%s"
+            raise ValueError(msg % (response.status_code, response.text))
+        logger.debug("Raw json content from the API: %s", response.json)
+        for json_project in response.json:
+            project, created = Project.objects.get_or_create(
+                api_starting_point=self,
+                slug=json_project['prj_id'])
+            project.source_url = json_project['prj_url']
+            project.name = json_project['prj_name']
+            project.save()
 
 
 class Project(Common):
@@ -62,6 +74,11 @@ class Project(Common):
             "Geodin URL for automatically loading this project's data."),
         null=True,
         blank=True)
+    api_starting_point = models.ForeignKey(
+        ApiStartingPoint,
+        null=True,
+        blank=True,
+        related_name='location_types')
 
     class Meta:
         verbose_name = _('project')
