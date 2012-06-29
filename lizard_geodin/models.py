@@ -45,6 +45,12 @@ class ApiStartingPoint(Common):
         verbose_name = _('API starting point')
         verbose_name_plural = _('API starting points')
 
+    def update_from_geodin(self):
+        """Load our data from the Geodin API."""
+        if not self.source_url:
+            raise ValueError("We need a source_url to update ourselves from.")
+        logger.warn("Dummy update from geodin: %s", self.source_url)
+
 
 class Project(Common):
     """Geodin project, it is the starting point for the API."""
