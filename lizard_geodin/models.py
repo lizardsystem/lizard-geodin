@@ -11,6 +11,15 @@ import requests
 logger = logging.getLogger(__name__)
 
 
+# Notes: the source_url isn't our own source, but the url of our list of
+# subitems.
+# And the subitems aren't all unique, they might be pre-existing.
+# So: update them, but maintain a list somewhere of items that have been
+# recently changed, otherwise it takes a long time.
+# But I fear there's a lot of m2m stuff around.
+# Perhaps work around it with json?
+
+
 def create_multiple_from_json(the_json, the_model, extra_kwargs=None):
     """Return slugs of created or updated models from the json list.
 
@@ -31,7 +40,7 @@ def create_multiple_from_json(the_json, the_model, extra_kwargs=None):
 
 
 class Common(models.Model):
-    id_field = 'id'
+    id_field = 'Id'
     field_mapping = {}
     name = models.CharField(
         _('name'),
@@ -136,9 +145,8 @@ class LocationType(Common):
 
 class Project(Common):
     """Geodin project, it is the starting point for the API."""
-    id_field = 'prj_id'
-    field_mapping = {'source_url': 'prj_url',
-                     'name': 'prj_name'}
+    field_mapping = {'source_url': 'Url',
+                     'name': 'Name'}
 
     # TODO: field for location of project? For the ProjectsOverview page?
     active = models.BooleanField(
