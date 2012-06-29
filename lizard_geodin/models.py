@@ -52,14 +52,20 @@ class Common(models.Model):
         abstract = True
 
     def __unicode__(self):
-        return self.name
+        return self.name or self.slug
 
     def update_from_json(self, the_json):
         self.slug = the_json.pop(self.id_field)
         for our_field, json_field in self.field_mapping.items():
+            if not json_field in the_json:
+                # logger.warn("Field %s not available in %r", json_field, self)
+                continue
             setattr(self, our_field, the_json.pop(json_field))
         if the_json:
             logger.debug("Left-over json data: %s", the_json)
+            # Not yet known what happens with this. Perhaps there is only a
+            # metadata attribute? Perhaps all these extra keys end up one-by
+            # one in the metadata field?
         self.save()
 
     def json_from_source_url(self):

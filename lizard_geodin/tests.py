@@ -6,6 +6,24 @@ from lizard_geodin import models
 from lizard_geodin import views
 
 
+class ModelsTest(TestCase):
+    # Test utility functions in models.py.
+
+    def test_create_multiple_from_json_empty(self):
+        the_json = []
+        the_model = models.Project
+        self.assertEquals(
+            models.create_multiple_from_json(the_json, the_model), [])
+
+    def test_create_multiple_from_json(self):
+        the_json = [{'prj_id': 'slug'},]
+        the_model = models.Project
+        self.assertEquals(
+            models.create_multiple_from_json(the_json, the_model),
+            ['slug'])
+        self.assertEquals(len(models.Project.objects.all()), 1)
+
+
 class CommonModelTest(TestCase):
     # The tests are done with Project because Common is abstract.
 
@@ -27,6 +45,29 @@ class CommonModelTest(TestCase):
         self.assertEquals(project.metadata['occupation'],
                           'destroyer of lawns')
 
+    def test_update_from_json(self):
+        project = models.Project(slug='slug')
+        project.save()
+        the_json = {'prj_id': 'slug',
+                    'prj_name': 'name'}
+        project.update_from_json(the_json)
+        self.assertEquals(project.name, 'name')
+
+    def test_update_from_json_with_left_over_data(self):
+        project = models.Project(slug='slug')
+        project.save()
+        the_json = {'prj_id': 'slug',
+                    'extra': 'extra'}
+        project.update_from_json(the_json)
+        # Nothing happens with this at the moment. But at least it doesn't
+        # crash :-)
+
+    def test_json_from_source_url_missing_source_url(self):
+        project = models.Project()
+        project.save()
+        with self.assertRaises(ValueError):
+            project.load_from_geodin()
+
 
 class ProjectModelTest(TestCase):
 
@@ -34,12 +75,6 @@ class ProjectModelTest(TestCase):
         project = models.Project(slug='slug')
         self.assertEquals(project.get_absolute_url(),
                           '/slug/')
-
-    def test_load_from_geodin_missing_source_url(self):
-        project = models.Project()
-        project.save()
-        with self.assertRaises(ValueError):
-            project.load_from_geodin()
 
     def test_load_from_geodin(self):
         project = models.Project(source_url='http://example.com')
@@ -68,4 +103,3 @@ class ProjectViewTest(TestCase):
         view = views.ProjectView()
         view.kwargs = {'slug': 'slug'}
         self.assertEquals(view.project, project)
-
