@@ -1,6 +1,5 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
 from __future__ import unicode_literals
-import json
 import logging
 
 from django.core.urlresolvers import reverse
@@ -46,7 +45,7 @@ class ApiStartingPoint(Common):
         verbose_name = _('API starting point')
         verbose_name_plural = _('API starting points')
 
-    def update_from_geodin(self):
+    def load_from_geodin(self):
         """Load our data from the Geodin API."""
         if not self.source_url:
             raise ValueError("We need a source_url to update ourselves from.")
@@ -54,20 +53,27 @@ class ApiStartingPoint(Common):
         if response.json is None:
             msg = "No json found. HTTP status code was %s, text was \n%s"
             raise ValueError(msg % (response.status_code, response.text))
-        logger.debug("Raw json content from the API: %s", response.json)
+        loaded_projects_ids = []
         for json_project in response.json:
             project, created = Project.objects.get_or_create(
                 api_starting_point=self,
                 slug=json_project['prj_id'])
-            project.source_url = json_project['prj_url']
-            project.name = json_project['prj_name']
-            project.save()
+            project.update_from_json(json_project)
+            loaded_projects_ids.append(project.id)
+        for unknown_project in Project.objects.exclude(
+            pk__in=loaded_projects_ids):
+            unknown_project.active=False
+            unknown_project.save()
 
 
 class Project(Common):
     """Geodin project, it is the starting point for the API."""
 
     # TODO: field for location of project? For the ProjectsOverview page?
+    active = models.BooleanField(
+        _('active'),
+        help_text=_("Is the project used in this site?"),
+        default=False)
     source_url = models.URLField(
         _('source url'),
         help_text=_(
@@ -83,16 +89,22 @@ class Project(Common):
     class Meta:
         verbose_name = _('project')
         verbose_name_plural = _('projects')
+        ordering = ('-active', 'name')
 
     def get_absolute_url(self):
         return reverse('lizard_geodin_project_view',
                        kwargs={'slug': self.slug})
 
-    def update_from_geodin(self):
+    def load_from_geodin(self):
         """Load our data from the Geodin API."""
         if not self.source_url:
             raise ValueError("We need a source_url to update ourselves from.")
         logger.warn("Dummy update from geodin: %s", self.source_url)
+
+    def update_from_json(self, the_json):
+        self.source_url = the_json['prj_url']
+        self.name = the_json['prj_name']
+        self.save()
 
 
 class LocationType(Common):

@@ -18,8 +18,7 @@ class ApiStartingPointAdmin(admin.ModelAdmin):
         num_updated = 0
         for api_starting_point in queryset:
             try:
-                api_starting_point.update_from_geodin()
-                api_starting_point.save()
+                api_starting_point.load_from_geodin()
                 num_updated += 1
             except Exception, e:
                 msg = ("Something went wrong when updating %s. " +
@@ -34,11 +33,12 @@ class ApiStartingPointAdmin(admin.ModelAdmin):
             "Reloaded %s api starting points." % (num_updated))
 
     reload.short_description = _(
-        "Reload projects from API (without deleting, btw).")
+        "Update list of available projects from API.")
 
 
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ('slug', 'name', 'source_url')
+    list_display = ('slug', 'active', 'name', 'source_url')
+    list_editable = ('active', )
 
 
 admin.site.register(models.Project, ProjectAdmin)
