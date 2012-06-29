@@ -35,16 +35,16 @@ class ProjectModelTest(TestCase):
         self.assertEquals(project.get_absolute_url(),
                           '/slug/')
 
-    def test_update_from_geodin_missing_source_url(self):
+    def test_load_from_geodin_missing_source_url(self):
         project = models.Project()
         project.save()
         with self.assertRaises(ValueError):
-            project.update_from_geodin()
+            project.load_from_geodin()
 
-    def test_update_from_geodin(self):
+    def test_load_from_geodin(self):
         project = models.Project(source_url='http://example.com')
         project.save()
-        project.update_from_geodin()  # Returns None for now. Dummy.
+        # project.load_from_geodin()  # Returns None for now. Dummy.
 
 
 class ProjectsOverviewTest(TestCase):

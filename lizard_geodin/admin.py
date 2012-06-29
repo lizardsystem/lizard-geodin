@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 class ApiStartingPointAdmin(admin.ModelAdmin):
     list_display = ('slug', 'name', 'source_url')
     actions = ['reload']
+    prepopulated_fields = {"slug": ("name",)}
 
     def reload(self, request, queryset):
         num_updated = 0
@@ -39,6 +40,27 @@ class ApiStartingPointAdmin(admin.ModelAdmin):
 class ProjectAdmin(admin.ModelAdmin):
     list_display = ('slug', 'active', 'name', 'source_url')
     list_editable = ('active', )
+    actions = ['reload']
+
+    def reload(self, request, queryset):
+        num_updated = 0
+        for project in queryset:
+            try:
+                project.load_from_geodin()
+                num_updated += 1
+            except Exception, e:
+                msg = ("Something went wrong when updating %s. " +
+                       "Look at %s directly. %s")
+                msg = msg % (project.name,
+                             project.source_url,
+                             e)
+                logger.exception(msg)
+                messages.error(request, msg)
+        self.message_user(
+            request,
+            "Reloaded %s projects." % (num_updated))
+
+    reload.short_description = _("Update project from API.")
 
 
 admin.site.register(models.Project, ProjectAdmin)

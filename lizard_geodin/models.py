@@ -12,12 +12,16 @@ logger = logging.getLogger(__name__)
 
 
 class Common(models.Model):
+    id_field = 'id'
+    field_mapping = ()
     name = models.CharField(
         _('name'),
         max_length=50,  # Geodin has 40 max.
         null=True,
         blank=True)
-    slug = models.SlugField(_('slug'))
+    slug = models.SlugField(
+        _('slug'),
+        help_text=_("Often set automatically from the internal Geodin ID"))
     # TODO: lizard-security dataset foreign key.
     metadata = JSONField(
         _('metadata'),
@@ -31,9 +35,25 @@ class Common(models.Model):
     def __unicode__(self):
         return self.name
 
+    def update_from_json(self, the_json):
+        self.slug = the_json.pop(self.id_field)
+        for our_field, json_field in self.field_mapping:
+            setattr(self, our_field, the_json.pop(json_field))
+        if the_json:
+            logger.debug("Left-over json data: %s", the_json)
+        self.save()
+
 
 class ApiStartingPoint(Common):
-    """Pointer at the Geodin API startpoint."""
+    """Pointer at the Geodin API startpoint.
+
+    The API starting point has a reload action that grabs the json at
+    ``source_url`` and generates/updates the projects that are listed in
+    there. By default, new projects are inactive.
+
+    If a project that used to be listed by the API isn't listed anymore, it is
+    automatically marked as inactive.
+    """
 
     source_url = models.URLField(
         _('source url'),
@@ -68,6 +88,9 @@ class ApiStartingPoint(Common):
 
 class Project(Common):
     """Geodin project, it is the starting point for the API."""
+    id_field = 'prj_id'
+    field_mapping = (('source_url', 'prj_url'),
+                     ('name', 'prj_name'))
 
     # TODO: field for location of project? For the ProjectsOverview page?
     active = models.BooleanField(
@@ -99,12 +122,11 @@ class Project(Common):
         """Load our data from the Geodin API."""
         if not self.source_url:
             raise ValueError("We need a source_url to update ourselves from.")
-        logger.warn("Dummy update from geodin: %s", self.source_url)
-
-    def update_from_json(self, the_json):
-        self.source_url = the_json['prj_url']
-        self.name = the_json['prj_name']
-        self.save()
+        response = requests.get(self.source_url)
+        if response.json is None:
+            msg = "No json found. HTTP status code was %s, text was \n%s"
+            raise ValueError(msg % (response.status_code, response.text))
+        self.update_from_json(response.json)
 
 
 class LocationType(Common):
