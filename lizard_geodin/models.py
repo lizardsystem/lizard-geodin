@@ -11,9 +11,28 @@ import requests
 logger = logging.getLogger(__name__)
 
 
+def create_multiple_from_json(the_json, the_model, extra_kwargs=None):
+    """Return slugs of created or updated models from the json list.
+
+    ``the_json`` is a list of items. For every one a model is created (or
+    updated if it already exists).
+
+    """
+    if extra_kwargs is None:
+        extra_kwargs = {}
+    handled_slugs = []
+    for json_item in the_json:
+        kwargs = {'slug': json_item[the_model.id_field]}
+        kwargs.update(extra_kwargs)
+        obj, is_created = the_model.objects.get_or_create(**kwargs)
+        obj.update_from_json(json_item)
+        handled_slugs.append(obj.slug)
+    return handled_slugs
+
+
 class Common(models.Model):
     id_field = 'id'
-    field_mapping = ()
+    field_mapping = {}
     name = models.CharField(
         _('name'),
         max_length=50,  # Geodin has 40 max.
@@ -37,15 +56,29 @@ class Common(models.Model):
 
     def update_from_json(self, the_json):
         self.slug = the_json.pop(self.id_field)
-        for our_field, json_field in self.field_mapping:
+        for our_field, json_field in self.field_mapping.items():
             setattr(self, our_field, the_json.pop(json_field))
         if the_json:
             logger.debug("Left-over json data: %s", the_json)
         self.save()
 
+    def json_from_source_url(self):
+        """Return json from our source_url.
+
+        Note: ``source_url`` is a convention, not every one of our subclasses
+        has it. But having this method here is handy.
+        """
+        if not self.source_url:
+            raise ValueError("We need a source_url to update ourselves from.")
+        response = requests.get(self.source_url)
+        if response.json is None:
+            msg = "No json found. HTTP status code was %s, text was \n%s"
+            raise ValueError(msg % (response.status_code, response.text))
+        return response.json
+
 
 class DataType(Common):
-    """Type of measure that has been done.
+    """Type of measurement that has been done.
 
     You need to do something with an investigation type. The data type tells
     you what you did with it, like analyzing it in a geotechnical lab. It
@@ -98,8 +131,8 @@ class LocationType(Common):
 class Project(Common):
     """Geodin project, it is the starting point for the API."""
     id_field = 'prj_id'
-    field_mapping = (('source_url', 'prj_url'),
-                     ('name', 'prj_name'))
+    field_mapping = {'source_url': 'prj_url',
+                     'name': 'prj_name'}
 
     # TODO: field for location of project? For the ProjectsOverview page?
     active = models.BooleanField(
@@ -129,13 +162,9 @@ class Project(Common):
 
     def load_from_geodin(self):
         """Load our data from the Geodin API."""
-        if not self.source_url:
-            raise ValueError("We need a source_url to update ourselves from.")
-        response = requests.get(self.source_url)
-        if response.json is None:
-            msg = "No json found. HTTP status code was %s, text was \n%s"
-            raise ValueError(msg % (response.status_code, response.text))
-        self.update_from_json(response.json)
+        the_json = self.json_from_source_url()
+        self.update_from_json(the_json)
+        # TODO: update the subitems.
 
 
 class ApiStartingPoint(Common):
@@ -161,20 +190,12 @@ class ApiStartingPoint(Common):
 
     def load_from_geodin(self):
         """Load our data from the Geodin API."""
-        if not self.source_url:
-            raise ValueError("We need a source_url to update ourselves from.")
-        response = requests.get(self.source_url)
-        if response.json is None:
-            msg = "No json found. HTTP status code was %s, text was \n%s"
-            raise ValueError(msg % (response.status_code, response.text))
-        loaded_projects_ids = []
-        for json_project in response.json:
-            project, created = Project.objects.get_or_create(
-                api_starting_point=self,
-                slug=json_project[Project.id_field])
-            project.update_from_json(json_project)
-            loaded_projects_ids.append(project.id)
+        the_json = self.json_from_source_url()
+
+        loaded_projects_slugs = create_multiple_from_json(
+            the_json, Project, extra_kwargs={'api_starting_point': self})
+
         for unknown_project in Project.objects.exclude(
-            pk__in=loaded_projects_ids):
+            slug__in=loaded_projects_slugs, api_starting_point=self):
             unknown_project.active = False
             unknown_project.save()

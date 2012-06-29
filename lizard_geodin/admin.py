@@ -23,7 +23,7 @@ class ApiStartingPointAdmin(admin.ModelAdmin):
                 num_updated += 1
             except Exception, e:
                 msg = ("Something went wrong when updating %s. " +
-                       "Look at %s directly. %s")
+                       "Look at %s directly. The error: %s")
                 msg = msg % (api_starting_point.name,
                              api_starting_point.source_url,
                              e)
@@ -34,7 +34,7 @@ class ApiStartingPointAdmin(admin.ModelAdmin):
             "Reloaded %s api starting points." % (num_updated))
 
     reload.short_description = _(
-        "Update list of available projects from API.")
+        "Reload list of available projects from API")
 
 
 class ProjectAdmin(admin.ModelAdmin):
@@ -50,7 +50,7 @@ class ProjectAdmin(admin.ModelAdmin):
                 num_updated += 1
             except Exception, e:
                 msg = ("Something went wrong when updating %s. " +
-                       "Look at %s directly. %s")
+                       "Look at %s directly. The error: %s")
                 msg = msg % (project.name,
                              project.source_url,
                              e)
@@ -60,7 +60,7 @@ class ProjectAdmin(admin.ModelAdmin):
             request,
             "Reloaded %s projects." % (num_updated))
 
-    reload.short_description = _("Update project from API.")
+    reload.short_description = _("Update project from API")
 
 
 admin.site.register(models.Project, ProjectAdmin)
