@@ -85,6 +85,9 @@ class Common(models.Model):
                 # logger.warn("Field %s not available in %r", json_field, self)
                 continue
             setattr(self, our_field, the_json.pop(json_field))
+        for key in the_json:
+            if key not in self.subitems_mapping:
+                logger.debug("Unknown key %s: %s", key, the_json[key])
         self.save()
 
     @classmethod
@@ -134,6 +137,7 @@ class DataType(Common):
     you what you did with it, like analyzing it in a geotechnical lab. It
     results in a set of parameters like "dx=..., dy=..., dz=...".
     """
+    field_mapping = {'name': 'Name'}
 
     # Probably TODO: add parameters via extra json field? Including their
     # description?

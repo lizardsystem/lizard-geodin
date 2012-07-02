@@ -26,3 +26,17 @@ class ProjectView(MapView):
     @property
     def project(self):
         return get_object_or_404(models.Project, slug=self.kwargs['slug'])
+
+    @property
+    def location_types(self):
+        return models.LocationType.objects.all()
+
+    @property
+    def investigation_types(self):
+        return models.InvestigationType.objects.all()
+
+    @property
+    def data_types(self):
+        return models.DataType.objects.all()
+
+

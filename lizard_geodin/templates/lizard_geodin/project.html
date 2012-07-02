@@ -6,4 +6,27 @@
   TODO
 </p>
 
+<h2>Unordered stuff below</h2>
+
+<h3>Location types</h3>
+<ul>
+  {% for location_type in view.location_types %}
+    <li>{{ location_type.name }}</li>
+  {% endfor %}
+</ul>
+
+<h3>Investigation types</h3>
+<ul>
+  {% for investigation_type in view.investigation_types %}
+    <li>{{ investigation_type.name }}</li>
+  {% endfor %}
+</ul>
+
+<h3>Data types</h3>
+<ul>
+  {% for data_type in view.data_types %}
+    <li>{{ data_type.name }}</li>
+  {% endfor %}
+</ul>
+
 {% endblock sidebar %}
