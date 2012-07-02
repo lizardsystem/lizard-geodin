@@ -1,6 +1,9 @@
 Code documentation
 ==================
 
-.. automodule:: lizard_geodin.views
+Models
+------
+
+.. automodule:: lizard_geodin.models
    :members:
 

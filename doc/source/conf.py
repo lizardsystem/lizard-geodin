@@ -5,6 +5,7 @@
 # serve to show the default.
 
 import datetime
+import os
 
 project = "lizard_geodin"
 author = ""
@@ -13,7 +14,7 @@ release = ""
 this_year = datetime.date.today().year
 copyright = '%s, %s' % (this_year, author)
 # Comment out one of these if we're a django project.
-#os.environ['DJANGO_SETTINGS_MODULE'] = 'lizard_geodin.testsettings'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'lizard_geodin.testsettings'
 #os.environ['DJANGO_SETTINGS_MODULE'] = 'lizard_geodin.settings'
 
 # If extensions (or modules to document with autodoc) are in another directory,
