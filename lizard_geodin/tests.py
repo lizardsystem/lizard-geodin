@@ -48,15 +48,15 @@ class CommonModelTest(TestCase):
     def test_update_from_json(self):
         project = models.Project(slug='slug')
         project.save()
-        the_json = {'prj_id': 'slug',
-                    'prj_name': 'name'}
+        the_json = {'Id': 'slug',
+                    'Name': 'name'}
         project.update_from_json(the_json)
         self.assertEquals(project.name, 'name')
 
     def test_update_from_json_with_left_over_data(self):
         project = models.Project(slug='slug')
         project.save()
-        the_json = {'prj_id': 'slug',
+        the_json = {'Id': 'slug',
                     'extra': 'extra'}
         project.update_from_json(the_json)
         # Nothing happens with this at the moment. But at least it doesn't
