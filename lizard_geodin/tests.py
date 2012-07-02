@@ -6,24 +6,6 @@ from lizard_geodin import models
 from lizard_geodin import views
 
 
-class ModelsTest(TestCase):
-    # Test utility functions in models.py.
-
-    def test_create_multiple_from_json_empty(self):
-        the_json = []
-        the_model = models.Project
-        self.assertEquals(
-            models.create_multiple_from_json(the_json, the_model), [])
-
-    def test_create_multiple_from_json(self):
-        the_json = [{'prj_id': 'slug'},]
-        the_model = models.Project
-        self.assertEquals(
-            models.create_multiple_from_json(the_json, the_model),
-            ['slug'])
-        self.assertEquals(len(models.Project.objects.all()), 1)
-
-
 class CommonModelTest(TestCase):
     # The tests are done with Project because Common is abstract.
 
@@ -67,6 +49,11 @@ class CommonModelTest(TestCase):
         project.save()
         with self.assertRaises(ValueError):
             project.load_from_geodin()
+
+    def test_create_or_update_from_json(self):
+        the_json = {'Id': 'slug'}
+        models.Project.create_or_update_from_json(the_json)
+        self.assertEquals(1, models.Project.objects.all().count())
 
 
 class ProjectModelTest(TestCase):
