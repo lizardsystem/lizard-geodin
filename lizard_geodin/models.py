@@ -1,5 +1,7 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
 from __future__ import unicode_literals
+from collections import defaultdict
+from pprint import pprint
 import logging
 
 from django.core.urlresolvers import reverse
@@ -18,30 +20,43 @@ logger = logging.getLogger(__name__)
 # recently changed, otherwise it takes a long time.
 # But I fear there's a lot of m2m stuff around.
 # Perhaps work around it with json?
-
-
-def create_multiple_from_json(the_json, the_model, extra_kwargs=None):
-    """Return slugs of created or updated models from the json list.
-
-    ``the_json`` is a list of items. For every one a model is created (or
-    updated if it already exists).
-
-    """
-    if extra_kwargs is None:
-        extra_kwargs = {}
-    handled_slugs = []
-    for json_item in the_json:
-        kwargs = {'slug': json_item[the_model.id_field]}
-        kwargs.update(extra_kwargs)
-        obj, is_created = the_model.objects.get_or_create(**kwargs)
-        obj.update_from_json(json_item)
-        handled_slugs.append(obj.slug)
-    return handled_slugs
+#
+# The hierarchy is a display hierarchy, really, not a database hierarchy. So
+# perhaps I just need to store the hierarchy with name and slug per project?
+# And retain the real DB objects for extra info about those items?
 
 
 class Common(models.Model):
+    """Abstract base class for the Geodin models.
+
+    There's some automatic machinery in here to make it easy to sync between
+    Geodin's json and our database models. ``.update_from_json()`` updates the
+    objects's info from a snippet of json. ``.json_from_source_url()``
+    reliably grabs the json from the server in case there's a source url
+    field.
+
+    There are three attributes you have to fill in to get it to work:
+
+    - ``id_field`` is the field in the json that we use as slug in our
+      database. This way our numeric database ID doesn't have to match
+      Geodin's.
+
+    - ``field_mapping`` is a dict that maps our model's fields to keys in the
+      json dictionary. ``.update_from_json()`` automatically sets those
+      fields.
+
+    - ``subitems_mapping`` is the key in the json dictionary that lists the
+      subitems. The mapping value is the model that should be created.
+
+    - ``create_subitems`` to tell whether to automatically create subitems.
+
+    """
+    # Four attributes to help the automatic json conversion mechanism.
     id_field = 'Id'
     field_mapping = {}
+    subitems_mapping = {}
+    create_subitems = False
+    # The common fields.
     name = models.CharField(
         _('name'),
         max_length=50,  # Geodin has 40 max.
@@ -70,12 +85,32 @@ class Common(models.Model):
                 # logger.warn("Field %s not available in %r", json_field, self)
                 continue
             setattr(self, our_field, the_json.pop(json_field))
-        if the_json:
-            logger.debug("Left-over json data: %s", the_json)
-            # Not yet known what happens with this. Perhaps there is only a
-            # metadata attribute? Perhaps all these extra keys end up one-by
-            # one in the metadata field?
         self.save()
+
+    @classmethod
+    def create_or_update_from_json(cls, the_json, extra_kwargs=None,
+                                   already_handled=None):
+        if extra_kwargs is None:
+            extra_kwargs = {}
+        slug = the_json[cls.id_field]
+        if already_handled is not None:
+            if slug in already_handled[cls]:
+                logger.debug("Slug %s already handled, omitting", slug)
+                return
+        kwargs = {'slug': slug}
+        kwargs.update(extra_kwargs)
+        obj, is_created = cls.objects.get_or_create(**kwargs)
+        obj.update_from_json(the_json)
+        logger.debug("Created %r.", obj)
+        if already_handled is not None:
+            already_handled[cls].append(obj.slug)
+        if cls.create_subitems:
+            # Create subitems.
+            for field, item_class in cls.subitems_mapping.items():
+                for json_item in the_json[field]:
+                    item_class.create_or_update_from_json(
+                        json_item, already_handled=already_handled)
+
 
     def json_from_source_url(self):
         """Return json from our source_url.
@@ -99,11 +134,6 @@ class DataType(Common):
     you what you did with it, like analyzing it in a geotechnical lab. It
     results in a set of parameters like "dx=..., dy=..., dz=...".
     """
-    investigation_type = models.ForeignKey(
-        'InvestigationType',
-        null=True,
-        blank=True,
-        related_name='data_types')
 
     # Probably TODO: add parameters via extra json field? Including their
     # description?
@@ -119,11 +149,9 @@ class InvestigationType(Common):
     Source means where the measure physically came from. A ground sample, for
     instance.
     """
-    location_type = models.ForeignKey(
-        'LocationType',
-        null=True,
-        blank=True,
-        related_name='investigation_types')
+    field_mapping = {'name': 'Name'}
+    subitems_mapping = {'DataTypes': DataType}
+    create_subitems = True
 
     class Meta:
         verbose_name = _('investigation type')
@@ -132,11 +160,9 @@ class InvestigationType(Common):
 
 class LocationType(Common):
     """Unknown; seems to be for setting attributes."""
-    project = models.ForeignKey(
-        'Project',
-        null=True,
-        blank=True,
-        related_name='location_types')
+    field_mapping = {'name': 'Name'}
+    subitems_mapping = {'InvestigationTypes': InvestigationType}
+    create_subitems = True
 
     class Meta:
         verbose_name = _('location type')
@@ -144,7 +170,8 @@ class LocationType(Common):
 
 
 class Project(Common):
-    """Geodin project, it is the starting point for the API."""
+    """Geodin project, it is the starting point for the API.
+    """
     field_mapping = {'source_url': 'Url',
                      'name': 'Name'}
 
@@ -175,10 +202,16 @@ class Project(Common):
                        kwargs={'slug': self.slug})
 
     def load_from_geodin(self):
-        """Load our data from the Geodin API."""
+        """Load our data from the Geodin API.
+
+        What we receive is a list of location types.
+        """
         the_json = self.json_from_source_url()
-        self.update_from_json(the_json)
-        # TODO: update the subitems.
+        already_handled = defaultdict(list)
+        for json_item in the_json:
+            LocationType.create_or_update_from_json(
+                json_item,
+                already_handled=already_handled)
 
 
 class ApiStartingPoint(Common):
@@ -203,12 +236,19 @@ class ApiStartingPoint(Common):
         verbose_name_plural = _('API starting points')
 
     def load_from_geodin(self):
-        """Load our data from the Geodin API."""
+        """Load our data from the Geodin API.
+
+        What we receive is a list of projects.
+        """
         the_json = self.json_from_source_url()
+        already_handled = {Project: []}
+        for json_item in the_json:
+            Project.create_or_update_from_json(
+                json_item,
+                extra_kwargs={'api_starting_point': self},
+                already_handled=already_handled)
 
-        loaded_projects_slugs = create_multiple_from_json(
-            the_json, Project, extra_kwargs={'api_starting_point': self})
-
+        loaded_projects_slugs = already_handled[Project]
         for unknown_project in Project.objects.exclude(
             slug__in=loaded_projects_slugs, api_starting_point=self):
             unknown_project.active = False
