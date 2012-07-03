@@ -13,6 +13,7 @@ class ProjectsOverview(UiView):
     """Simple overview page with list of projects."""
     template_name = 'lizard_geodin/projects_overview.html'
     page_title = _('Overview of Geodin projects')
+    edit_link = '/admin/lizard_geodin/apistartingpoint/'
 
     def projects(self):
         """Return all projects."""
@@ -22,6 +23,7 @@ class ProjectsOverview(UiView):
 class ProjectView(MapView):
     """View for a project's data selection hierarchy."""
     template_name = 'lizard_geodin/project.html'
+    edit_link = '/admin/lizard_geodin/project/'
 
     @property
     def project(self):
