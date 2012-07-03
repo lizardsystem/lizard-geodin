@@ -1,7 +1,6 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
 from __future__ import unicode_literals
 from collections import defaultdict
-from pprint import pprint
 import logging
 
 from django.core.urlresolvers import reverse
