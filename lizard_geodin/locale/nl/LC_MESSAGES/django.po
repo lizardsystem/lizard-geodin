@@ -1,0 +1,110 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-07-09 09:02-0500\n"
+"PO-Revision-Date: 2012-07-09 16:02+0200\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+
+#: admin.py:37
+msgid "Reload list of available projects from API"
+msgstr "Herlaad projectenlijst via de API"
+
+#: admin.py:63
+msgid "Update project from API"
+msgstr "Update project via de API"
+
+#: models.py:60
+msgid "name"
+msgstr "naam"
+
+#: models.py:65
+msgid "slug"
+msgstr "id in URL"
+
+#: models.py:66
+msgid "Often set automatically from the internal Geodin ID"
+msgstr "Wordt normaliter automatisch gezet vanuit Geodin's interne ID."
+
+#: models.py:69
+msgid "metadata"
+msgstr "metadata"
+
+#: models.py:70
+msgid "Extra metadata provided by Geodin"
+msgstr "Extra metadata die in Geodin beschikbaar is"
+
+#: models.py:145
+msgid "data type"
+msgstr "datatype"
+
+#: models.py:146
+msgid "data types"
+msgstr "datatypes"
+
+#: models.py:160
+msgid "investigation type"
+msgstr "onderzoekstype"
+
+#: models.py:161
+msgid "investigation types"
+msgstr "onderzoekstypes"
+
+#: models.py:171
+msgid "location type"
+msgstr "locatietype"
+
+#: models.py:172
+msgid "location types"
+msgstr "locatietypes"
+
+#: models.py:183
+msgid "active"
+msgstr "actief"
+
+#: models.py:184
+msgid "Is the project used in this site?"
+msgstr "Wordt dit project daadwerkelijk in de site gebruikt?"
+
+#: models.py:187 models.py:232
+msgid "source url"
+msgstr "bron-url"
+
+#: models.py:189
+msgid "Geodin URL for automatically loading this project's data."
+msgstr "URL van dit project in Geodin's API"
+
+#: models.py:199
+msgid "project"
+msgstr "project"
+
+#: models.py:200
+msgid "projects"
+msgstr "projecten"
+
+#: models.py:233
+msgid "Geodin URL that lists the available projects."
+msgstr "URL in de Geodin API dat de lijst met projecten teruggeeft"
+
+#: models.py:238
+msgid "API starting point"
+msgstr "beginpunt van de API"
+
+#: models.py:239
+msgid "API starting points"
+msgstr "beginpunten van de API"
+
+#: views.py:15
+msgid "Overview of Geodin projects"
+msgstr "Overzicht van Geodin projecten"

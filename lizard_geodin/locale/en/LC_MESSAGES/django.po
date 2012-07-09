@@ -1,0 +1,110 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-07-09 09:02-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: admin.py:37
+msgid "Reload list of available projects from API"
+msgstr ""
+
+#: admin.py:63
+msgid "Update project from API"
+msgstr ""
+
+#: models.py:60
+msgid "name"
+msgstr ""
+
+#: models.py:65
+msgid "slug"
+msgstr ""
+
+#: models.py:66
+msgid "Often set automatically from the internal Geodin ID"
+msgstr ""
+
+#: models.py:69
+msgid "metadata"
+msgstr ""
+
+#: models.py:70
+msgid "Extra metadata provided by Geodin"
+msgstr ""
+
+#: models.py:145
+msgid "data type"
+msgstr ""
+
+#: models.py:146
+msgid "data types"
+msgstr ""
+
+#: models.py:160
+msgid "investigation type"
+msgstr ""
+
+#: models.py:161
+msgid "investigation types"
+msgstr ""
+
+#: models.py:171
+msgid "location type"
+msgstr ""
+
+#: models.py:172
+msgid "location types"
+msgstr ""
+
+#: models.py:183
+msgid "active"
+msgstr ""
+
+#: models.py:184
+msgid "Is the project used in this site?"
+msgstr ""
+
+#: models.py:187 models.py:232
+msgid "source url"
+msgstr ""
+
+#: models.py:189
+msgid "Geodin URL for automatically loading this project's data."
+msgstr ""
+
+#: models.py:199
+msgid "project"
+msgstr ""
+
+#: models.py:200
+msgid "projects"
+msgstr ""
+
+#: models.py:233
+msgid "Geodin URL that lists the available projects."
+msgstr ""
+
+#: models.py:238
+msgid "API starting point"
+msgstr ""
+
+#: models.py:239
+msgid "API starting points"
+msgstr ""
+
+#: views.py:15
+msgid "Overview of Geodin projects"
+msgstr ""
