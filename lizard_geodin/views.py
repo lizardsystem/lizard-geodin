@@ -1,7 +1,9 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
 from __future__ import unicode_literals
+import json
 
 from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
 from django.utils.translation import ugettext as _
 # from lizard_map.views import MapView
 from lizard_ui.views import UiView
@@ -48,3 +50,9 @@ class ProjectView(UiView):
     @property
     def measurements(self):
         return self.project.measurements.all()
+
+
+def point_flot_data(request, point_id=None):
+    point = models.Point.objects.get(id=point_id)
+    the_json = json.dumps({'data': point.timeseries()})
+    return HttpResponse(the_json)

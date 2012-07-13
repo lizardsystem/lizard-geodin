@@ -372,7 +372,7 @@ class Measurement(models.Model):
 class Point(Common):
     """Data point."""
     auto_fill_metadata = True
-    field_mapping = {'timeseries_url': 'Url',
+    field_mapping = {'source_url': 'Url',
                      'name': 'Name',
                      'x': 'Xcoord',
                      'y': 'Ycoord',
@@ -386,7 +386,7 @@ class Point(Common):
         null=True,
         blank=True,
         related_name='points')
-    timeseries_url = models.URLField(
+    source_url = models.URLField(
         _('timeseries url'),
         help_text=_(
             "Geodin URL that gives the last couple of days' data."),
@@ -411,9 +411,41 @@ class Point(Common):
         verbose_name_plural = _('points with data')
 
     def content_for_display(self):
+        """Helper method. Return field/value tuples for showing the content.
+        """
         result = {}
         for field_name in self.field_mapping:
             result[field_name] = getattr(self, field_name)
         if self.metadata is not None:
             result.update(self.metadata)
         return sorted(result.items())
+
+    def timeseries(self):
+        """Return last couple of days' timeseries data.
+
+        Note that it doesn't have to be one single timeserie. You can have
+        (dx, dy, dz), for instance.
+
+        What it returns is a list of dictionaries with 'label' and 'data' for
+        flot. You can add 'color' and so yourself afterwards.
+        """
+        the_json = self.json_from_source_url()
+        # Perhaps add caching, it seems to take quite some time.
+        lines = defaultdict(list)
+        temp_hack_date = 0
+        for timestep in the_json:
+            timestep.pop('Id')
+            timestep.pop('Date')
+            # ^^^ Assign this to date, see
+            # http://people.iola.dk/olau/flot/examples/time.html
+            date = temp_hack_date
+            # ^^^ Temp hack, the json date isn't in a good format yet.
+            for key in timestep:
+                lines[key].append((date, timestep[key]))
+            temp_hack_date += 1
+        result = []
+        for label, data in lines.items():
+            flot_line = {'label': label,
+                         'data': data}
+            result.append(flot_line)
+        return result
