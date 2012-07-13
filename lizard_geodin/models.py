@@ -56,6 +56,7 @@ class Common(models.Model):
     field_mapping = {}
     subitems_mapping = {}
     create_subitems = False
+    auto_fill_metadata = False
     # The common fields.
     name = models.CharField(
         _('name'),
@@ -85,9 +86,12 @@ class Common(models.Model):
                 # logger.warn("Field %s not available in %r", json_field, self)
                 continue
             setattr(self, our_field, the_json.pop(json_field))
-        for key in the_json:
-            if key not in self.subitems_mapping:
-                logger.debug("Unknown key %s: %s", key, the_json[key])
+        if self.auto_fill_metadata:
+            self.metadata = the_json
+        else:
+            for key in the_json:
+                if key not in self.subitems_mapping:
+                    logger.debug("Unknown key %s: %s", key, the_json[key])
         self.save()
 
     @classmethod
@@ -245,10 +249,10 @@ class Project(Common):
                     investigation_dict,
                     already_handled=already_handled)
                 for data_dict in investigation_dict['DataTypes']:
+                    points = data_dict.pop('Points')
                     data_type = DataType.create_or_update_from_json(
                         data_dict,
                         already_handled=already_handled)
-                    points = data_dict.pop('Points')
                     if not points:
                         logger.debug("No measurements found.")
                         continue
@@ -261,9 +265,12 @@ class Project(Common):
                         location_type=location_type,
                         investigation_type=investigation_type,
                         data_type=data_type)
-                    measurement.metadata = {'points': points}
                     measurement.save()
                     logger.debug("Created a measurement: %s", name)
+                    for point_dict in points:
+                        point = Point.create_or_update_from_json(point_dict)
+                        point.measurement = measurement
+                        point.save()
 
 
 class ApiStartingPoint(Common):
@@ -356,7 +363,57 @@ class Measurement(models.Model):
         return ', '.join(self.data_type.metadata['fields'])
 
     def num_points(self):
-        return len(self.metadata['points'])
+        return self.points.count()
 
-    def last_point(self):
-        return self.metadata['points'][-1].items()
+    def first_point(self):
+        return self.points.all()[0]
+
+
+class Point(Common):
+    """Data point."""
+    auto_fill_metadata = True
+    field_mapping = {'timeseries_url': 'Url',
+                     'name': 'Name',
+                     'x': 'Xcoord',
+                     'y': 'Ycoord',
+                     'z': 'Zcoord',
+                     }
+    x = models.FloatField(null=True, blank=True)
+    y = models.FloatField(null=True, blank=True)
+    z = models.FloatField(null=True, blank=True)
+    measurement = models.ForeignKey(
+        'Measurement',
+        null=True,
+        blank=True,
+        related_name='points')
+    timeseries_url = models.URLField(
+        _('timeseries url'),
+        help_text=_(
+            "Geodin URL that gives the last couple of days' data."),
+        null=True,
+        blank=True)
+
+    what_it_looks_like = {
+        'Name': 'S1',
+        'Ycoord': '1337.779',
+        'Zcoord': '1.6685',
+        'Url':
+            'http://borealis.fugro-nederland.nl/borportal/geodinwebservice.exe/getportalpage?layout=Prism_Deformation_1_All&portal=10&objectid1=NIJ0010007SEN000',
+        '__type': 'GdpMeasurementPoint:#ServiceLibrary',
+        'Xcoord': '959.1575',
+        'Dx': '0',
+        'Dy': '0',
+        'Geodpoint': 'M',
+        'Dz': '0'}
+
+    class Meta:
+        verbose_name = _('point with data')
+        verbose_name_plural = _('points with data')
+
+    def content_for_display(self):
+        result = {}
+        for field_name in self.field_mapping:
+            result[field_name] = getattr(self, field_name)
+        if self.metadata is not None:
+            result.update(self.metadata)
+        return sorted(result.items())

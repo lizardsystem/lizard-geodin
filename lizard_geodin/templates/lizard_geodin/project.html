@@ -51,10 +51,10 @@
       </dl>
 
       <p>
-        We have {{ view.num_points }} points with data. The last item's data:
+        We have {{ measurement.num_points }} points with data. The first item's data:
       </p>
       <table class="table table-bordered">
-        {% for key, value in measurement.last_point %}
+        {% for key, value in measurement.first_point.content_for_display %}
           <tr><td>{{ key }}</td><td>{{ value }}</td></tr>
         {% endfor %}
       </table>
