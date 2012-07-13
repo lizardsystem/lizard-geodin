@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
-from lizard_map.views import MapView
+# from lizard_map.views import MapView
 from lizard_ui.views import UiView
 
 from lizard_geodin import models
@@ -20,10 +20,14 @@ class ProjectsOverview(UiView):
         return models.Project.objects.all()
 
 
-class ProjectView(MapView):
+class ProjectView(UiView):
     """View for a project's data selection hierarchy."""
     template_name = 'lizard_geodin/project.html'
-    edit_link = '/admin/lizard_geodin/project/'
+
+    @property
+    def edit_link(self):
+        return '/admin/lizard_geodin/project/{pk}/'.format(
+            pk=self.project.pk)
 
     @property
     def project(self):
@@ -41,4 +45,6 @@ class ProjectView(MapView):
     def data_types(self):
         return models.DataType.objects.all()
 
-
+    @property
+    def measurements(self):
+        return self.project.measurements.all()

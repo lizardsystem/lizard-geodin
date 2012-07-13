@@ -312,18 +312,6 @@ class Measurement(models.Model):
 
 
     """
-    what_it_looks_like = {
-        'Name': 'S1',
-        'Ycoord': '1337.779',
-        'Zcoord': '1.6685',
-        'Url':
-            'http://borealis.fugro-nederland.nl/borportal/geodinwebservice.exe/getportalpage?layout=Prism_Deformation_1_All&portal=10&objectid1=NIJ0010007SEN000',
-        '__type': 'GdpMeasurementPoint:#ServiceLibrary',
-        'Xcoord': '959.1575',
-        'Dx': '0',
-        'Dy': '0',
-        'Geodpoint': 'M',
-        'Dz': '0'}
     name = models.CharField(
         _('name'),
         max_length=255,
@@ -363,3 +351,12 @@ class Measurement(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    def fields(self):
+        return ', '.join(self.data_type.metadata['fields'])
+
+    def num_points(self):
+        return len(self.metadata['points'])
+
+    def last_point(self):
+        return self.metadata['points'][-1].items()

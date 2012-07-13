@@ -22,5 +22,8 @@ urlpatterns = patterns(
     url(r'^(?P<slug>[^/]+)/$',
         views.ProjectView.as_view(),
         name='lizard_geodin_project_view'),
+    # url(r'^(?P<slug>[^/]+)/(?P<measurement_pk>[^/]+)$',
+    #     views.ProjectView.as_view(),
+    #     name='lizard_geodin_project_view'),
     )
 urlpatterns += lizard_ui.urls.debugmode_urlpatterns()
