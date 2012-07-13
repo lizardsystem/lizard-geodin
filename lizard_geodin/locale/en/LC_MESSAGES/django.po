@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-09 09:02-0500\n"
+"POT-Creation-Date: 2012-07-13 06:55-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,84 +25,92 @@ msgstr ""
 msgid "Update project from API"
 msgstr ""
 
-#: models.py:60
+#: models.py:61 models.py:328
 msgid "name"
 msgstr ""
 
-#: models.py:65
+#: models.py:66
 msgid "slug"
 msgstr ""
 
-#: models.py:66
+#: models.py:67
 msgid "Often set automatically from the internal Geodin ID"
 msgstr ""
 
-#: models.py:69
+#: models.py:70 models.py:335
 msgid "metadata"
 msgstr ""
 
-#: models.py:70
+#: models.py:71 models.py:336
 msgid "Extra metadata provided by Geodin"
 msgstr ""
 
-#: models.py:145
+#: models.py:147
 msgid "data type"
 msgstr ""
 
-#: models.py:146
+#: models.py:148
 msgid "data types"
 msgstr ""
 
-#: models.py:160
+#: models.py:179
 msgid "investigation type"
 msgstr ""
 
-#: models.py:161
+#: models.py:180
 msgid "investigation types"
 msgstr ""
 
-#: models.py:171
+#: models.py:190
 msgid "location type"
 msgstr ""
 
-#: models.py:172
+#: models.py:191
 msgid "location types"
 msgstr ""
 
-#: models.py:183
+#: models.py:202
 msgid "active"
 msgstr ""
 
-#: models.py:184
+#: models.py:203
 msgid "Is the project used in this site?"
 msgstr ""
 
-#: models.py:187 models.py:232
+#: models.py:206 models.py:281
 msgid "source url"
 msgstr ""
 
-#: models.py:189
+#: models.py:208
 msgid "Geodin URL for automatically loading this project's data."
 msgstr ""
 
-#: models.py:199
+#: models.py:218
 msgid "project"
 msgstr ""
 
-#: models.py:200
+#: models.py:219
 msgid "projects"
 msgstr ""
 
-#: models.py:233
+#: models.py:282
 msgid "Geodin URL that lists the available projects."
 msgstr ""
 
-#: models.py:238
+#: models.py:287
 msgid "API starting point"
 msgstr ""
 
-#: models.py:239
+#: models.py:288
 msgid "API starting points"
+msgstr ""
+
+#: models.py:361
+msgid "measurement"
+msgstr ""
+
+#: models.py:362
+msgid "measurements"
 msgstr ""
 
 #: views.py:15

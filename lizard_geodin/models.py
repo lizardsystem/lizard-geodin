@@ -1,6 +1,7 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
 from __future__ import unicode_literals
 from collections import defaultdict
+from pprint import pprint
 import logging
 
 from django.core.urlresolvers import reverse
@@ -112,6 +113,7 @@ class Common(models.Model):
                 for json_item in the_json[field]:
                     item_class.create_or_update_from_json(
                         json_item, already_handled=already_handled)
+        return obj
 
 
     def json_from_source_url(self):
@@ -145,6 +147,23 @@ class DataType(Common):
         verbose_name = _('data type')
         verbose_name_plural = _('data types')
 
+    def update_from_json(self, the_json):
+        # This one is custom!
+        pprint(the_json)
+        print "############"
+        self.slug = the_json.pop(self.id_field)
+        for our_field, json_field in self.field_mapping.items():
+            if not json_field in the_json:
+                # logger.warn("Field %s not available in %r", json_field, self)
+                continue
+            setattr(self, our_field, the_json.pop(json_field))
+        # for key in the_json:
+        #     if key not in self.subitems_mapping:
+        #         logger.debug("Unknown key %s: %s", key, the_json[key])
+        self.metadata = {'fields': the_json.pop('Fields')}
+        # ^^^ I don't know if we actually need this.
+        self.save()
+
 
 class InvestigationType(Common):
     """Source of the measures.
@@ -154,7 +173,7 @@ class InvestigationType(Common):
     """
     field_mapping = {'name': 'Name'}
     subitems_mapping = {'DataTypes': DataType}
-    create_subitems = True
+    # create_subitems = True
 
     class Meta:
         verbose_name = _('investigation type')
@@ -165,7 +184,7 @@ class LocationType(Common):
     """Unknown; seems to be for setting attributes."""
     field_mapping = {'name': 'Name'}
     subitems_mapping = {'InvestigationTypes': InvestigationType}
-    create_subitems = True
+    # create_subitems = True
 
     class Meta:
         verbose_name = _('location type')
@@ -207,14 +226,44 @@ class Project(Common):
     def load_from_geodin(self):
         """Load our data from the Geodin API.
 
-        What we receive is a list of location types.
+        What we receive is a list of location types. In the end, we get
+        location types and data types and measures, which are a set of points.
+
         """
         the_json = self.json_from_source_url()
         already_handled = defaultdict(list)
-        for json_item in the_json:
-            LocationType.create_or_update_from_json(
-                json_item,
+        # Clean up old measurement data.
+        logger.debug("Deleting %s old measurements.",
+                     Measurement.objects.filter(project=self).count())
+        Measurement.objects.filter(project=self).delete()
+        for location_dict in the_json:
+            location_type = LocationType.create_or_update_from_json(
+                location_dict,
                 already_handled=already_handled)
+            for investigation_dict in location_dict['InvestigationTypes']:
+                investigation_type = InvestigationType.create_or_update_from_json(
+                    investigation_dict,
+                    already_handled=already_handled)
+                for data_dict in investigation_dict['DataTypes']:
+                    data_type = DataType.create_or_update_from_json(
+                        data_dict,
+                        already_handled=already_handled)
+                    points = data_dict.pop('Points')
+                    if not points:
+                        logger.debug("No measurements found.")
+                        continue
+                    name = ', '.join([location_type.name,
+                                      investigation_type.name,
+                                      data_type.name])
+                    measurement = Measurement(
+                        name=name,
+                        project=self,
+                        location_type=location_type,
+                        investigation_type=investigation_type,
+                        data_type=data_type)
+                    measurement.metadata = {'points': points}
+                    measurement.save()
+                    logger.debug("Created a measurement: %s", name)
 
 
 class ApiStartingPoint(Common):
@@ -256,3 +305,61 @@ class ApiStartingPoint(Common):
             slug__in=loaded_projects_slugs, api_starting_point=self):
             unknown_project.active = False
             unknown_project.save()
+
+
+class Measurement(models.Model):
+    """The hierarchy of geodin boils down to this really-unnamed class.
+
+
+    """
+    what_it_looks_like = {
+        'Name': 'S1',
+        'Ycoord': '1337.779',
+        'Zcoord': '1.6685',
+        'Url':
+            'http://borealis.fugro-nederland.nl/borportal/geodinwebservice.exe/getportalpage?layout=Prism_Deformation_1_All&portal=10&objectid1=NIJ0010007SEN000',
+        '__type': 'GdpMeasurementPoint:#ServiceLibrary',
+        'Xcoord': '959.1575',
+        'Dx': '0',
+        'Dy': '0',
+        'Geodpoint': 'M',
+        'Dz': '0'}
+    name = models.CharField(
+        _('name'),
+        max_length=255,
+        null=True,
+        blank=True)
+    # slug = models.SlugField(
+    #     _('slug'))
+    metadata = JSONField(
+        _('metadata'),
+        help_text=_("Extra metadata provided by Geodin"),
+        null=True,
+        blank=True)
+    project = models.ForeignKey(
+        'Project',
+        null=True,
+        blank=True,
+        related_name='measurements')
+    location_type = models.ForeignKey(
+        'LocationType',
+        null=True,
+        blank=True,
+        related_name='measurements')
+    investigation_type = models.ForeignKey(
+        'InvestigationType',
+        null=True,
+        blank=True,
+        related_name='measurements')
+    data_type = models.ForeignKey(
+        'DataType',
+        null=True,
+        blank=True,
+        related_name='measurements')
+
+    class Meta:
+        verbose_name = _('measurement')
+        verbose_name_plural = _('measurements')
+
+    def __unicode__(self):
+        return self.name

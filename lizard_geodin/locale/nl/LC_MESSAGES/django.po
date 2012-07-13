@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-09 09:02-0500\n"
-"PO-Revision-Date: 2012-07-09 16:02+0200\n"
+"POT-Creation-Date: 2012-07-13 06:55-0500\n"
+"PO-Revision-Date: 2012-07-13 13:55+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -25,85 +25,93 @@ msgstr "Herlaad projectenlijst via de API"
 msgid "Update project from API"
 msgstr "Update project via de API"
 
-#: models.py:60
+#: models.py:61 models.py:328
 msgid "name"
 msgstr "naam"
 
-#: models.py:65
+#: models.py:66
 msgid "slug"
 msgstr "id in URL"
 
-#: models.py:66
+#: models.py:67
 msgid "Often set automatically from the internal Geodin ID"
 msgstr "Wordt normaliter automatisch gezet vanuit Geodin's interne ID."
 
-#: models.py:69
+#: models.py:70 models.py:335
 msgid "metadata"
 msgstr "metadata"
 
-#: models.py:70
+#: models.py:71 models.py:336
 msgid "Extra metadata provided by Geodin"
 msgstr "Extra metadata die in Geodin beschikbaar is"
 
-#: models.py:145
+#: models.py:147
 msgid "data type"
 msgstr "datatype"
 
-#: models.py:146
+#: models.py:148
 msgid "data types"
 msgstr "datatypes"
 
-#: models.py:160
+#: models.py:179
 msgid "investigation type"
 msgstr "onderzoekstype"
 
-#: models.py:161
+#: models.py:180
 msgid "investigation types"
 msgstr "onderzoekstypes"
 
-#: models.py:171
+#: models.py:190
 msgid "location type"
 msgstr "locatietype"
 
-#: models.py:172
+#: models.py:191
 msgid "location types"
 msgstr "locatietypes"
 
-#: models.py:183
+#: models.py:202
 msgid "active"
 msgstr "actief"
 
-#: models.py:184
+#: models.py:203
 msgid "Is the project used in this site?"
 msgstr "Wordt dit project daadwerkelijk in de site gebruikt?"
 
-#: models.py:187 models.py:232
+#: models.py:206 models.py:281
 msgid "source url"
 msgstr "bron-url"
 
-#: models.py:189
+#: models.py:208
 msgid "Geodin URL for automatically loading this project's data."
 msgstr "URL van dit project in Geodin's API"
 
-#: models.py:199
+#: models.py:218
 msgid "project"
 msgstr "project"
 
-#: models.py:200
+#: models.py:219
 msgid "projects"
 msgstr "projecten"
 
-#: models.py:233
+#: models.py:282
 msgid "Geodin URL that lists the available projects."
 msgstr "URL in de Geodin API dat de lijst met projecten teruggeeft"
 
-#: models.py:238
+#: models.py:287
 msgid "API starting point"
 msgstr "beginpunt van de API"
 
-#: models.py:239
+#: models.py:288
 msgid "API starting points"
 msgstr "beginpunten van de API"
+
+#: models.py:361
+msgid "measurement"
+msgstr "meting"
+
+#: models.py:362
+msgid "measurements"
+msgstr "metingen"
 
 #: views.py:15
 msgid "Overview of Geodin projects"

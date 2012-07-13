@@ -63,7 +63,12 @@ class ProjectAdmin(admin.ModelAdmin):
     reload.short_description = _("Update project from API")
 
 
+class MeasurementAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'project', 'location_type', 'investigation_type', 'data_type')
+
+
 admin.site.register(models.Project, ProjectAdmin)
+admin.site.register(models.Measurement, MeasurementAdmin)
 admin.site.register(models.ApiStartingPoint, ApiStartingPointAdmin)
 admin.site.register(models.LocationType)
 admin.site.register(models.InvestigationType)
