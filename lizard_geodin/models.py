@@ -9,6 +9,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from jsonfield import JSONField
 import requests
+import dateutil.parser
 
 logger = logging.getLogger(__name__)
 
@@ -239,12 +240,6 @@ class Project(Common):
         """
         the_json = self.json_from_source_url()
         already_handled = defaultdict(list)
-        # Clean up old measurement data.
-        # Bugger, this also means we cannot link to measurements as the ID
-        # keeps changing...
-        logger.debug("Deleting %s old measurements.",
-                     Measurement.objects.filter(project=self).count())
-        Measurement.objects.filter(project=self).delete()
         hierarchy = []
         for location_dict in the_json:
             location_type = LocationType.create_or_update_from_json(
@@ -269,17 +264,19 @@ class Project(Common):
                     if not points:
                         logger.debug("No measurements found.")
                         continue
-                    name = ', '.join([location_type.name,
+                    name = ', '.join([self.name,
+                                      location_type.name,
                                       investigation_type.name,
                                       data_type.name])
-                    measurement = Measurement(
-                        name=name,
+                    measurement, created = Measurement.objects.get_or_create(
                         project=self,
                         location_type=location_type,
                         investigation_type=investigation_type,
                         data_type=data_type)
+                    if created:
+                        logger.debug("Created a new measurement: %s", name)
+                    measurement.name = name
                     measurement.save()
-                    logger.debug("Created a measurement: %s", name)
                     for point_dict in points:
                         point = Point.create_or_update_from_json(point_dict)
                         point.measurement = measurement
@@ -337,7 +334,8 @@ class ApiStartingPoint(Common):
 class Measurement(models.Model):
     """The hierarchy of geodin boils down to this really-unnamed class.
 
-
+    A measurement is unique per project/location/investigation/datatype
+    combination.
     """
     name = models.CharField(
         _('name'),
@@ -451,17 +449,14 @@ class Point(Common):
         the_json = self.json_from_source_url()
         # Perhaps add caching, it seems to take quite some time.
         lines = defaultdict(list)
-        temp_hack_date = 0
         for timestep in the_json:
             timestep.pop('Id')
-            timestep.pop('Date')
-            # ^^^ Assign this to date, see
-            # http://people.iola.dk/olau/flot/examples/time.html
-            date = temp_hack_date
-            # ^^^ Temp hack, the json date isn't in a good format yet.
+            date = dateutil.parser.parse(timestep.pop('Date'))
+            timestamp_in_seconds = int(date.strftime("%s"))
+            timestamp_in_ms = 1000 * timestamp_in_seconds
+            # See http://people.iola.dk/olau/flot/examples/time.html
             for key in timestep:
-                lines[key].append((date, timestep[key]))
-            temp_hack_date += 1
+                lines[key].append((timestamp_in_ms, timestep[key]))
         result = []
         for label, data in lines.items():
             flot_line = {'label': label,
