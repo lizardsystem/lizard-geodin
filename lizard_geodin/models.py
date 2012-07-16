@@ -81,6 +81,9 @@ class Common(models.Model):
 
     def update_from_json(self, the_json):
         self.slug = the_json.pop(self.id_field)
+        private_fields = [key for key in the_json if key.startswith('_')]
+        for key in private_fields:
+            the_json.pop(key)
         for our_field, json_field in self.field_mapping.items():
             if not json_field in the_json:
                 # logger.warn("Field %s not available in %r", json_field, self)
