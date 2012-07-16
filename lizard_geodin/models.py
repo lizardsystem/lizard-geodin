@@ -237,22 +237,32 @@ class Project(Common):
         the_json = self.json_from_source_url()
         already_handled = defaultdict(list)
         # Clean up old measurement data.
+        # Bugger, this also means we cannot link to measurements as the ID
+        # keeps changing...
         logger.debug("Deleting %s old measurements.",
                      Measurement.objects.filter(project=self).count())
         Measurement.objects.filter(project=self).delete()
+        hierarchy = []
         for location_dict in the_json:
             location_type = LocationType.create_or_update_from_json(
                 location_dict,
                 already_handled=already_handled)
+            level1 = {'name': location_type.name,
+                      'subitems': []}
             for investigation_dict in location_dict['InvestigationTypes']:
                 investigation_type = InvestigationType.create_or_update_from_json(
                     investigation_dict,
                     already_handled=already_handled)
+                level2 = {'name': investigation_type.name,
+                          'subitems': []}
                 for data_dict in investigation_dict['DataTypes']:
                     points = data_dict.pop('Points')
                     data_type = DataType.create_or_update_from_json(
                         data_dict,
                         already_handled=already_handled)
+                    level3 = {'name': data_type.name,
+                              'measurement_url': None}
+                    level2['subitems'].append(level3)
                     if not points:
                         logger.debug("No measurements found.")
                         continue
@@ -271,6 +281,13 @@ class Project(Common):
                         point = Point.create_or_update_from_json(point_dict)
                         point.measurement = measurement
                         point.save()
+                    level3['measurement_url'] = measurement.get_absolute_url()
+                level1['subitems'].append(level2)
+            hierarchy.append(level1)
+        if self.metadata is None:
+            self.metadata = {}
+        self.metadata['hierarchy'] = hierarchy
+        self.save()
 
 
 class ApiStartingPoint(Common):
@@ -359,14 +376,13 @@ class Measurement(models.Model):
     def __unicode__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return reverse('lizard_geodin_measurement_view',
+                       kwargs={'slug': self.project.slug,
+                               'measurement_id': self.id})
+
     def fields(self):
         return ', '.join(self.data_type.metadata['fields'])
-
-    def num_points(self):
-        return self.points.count()
-
-    def first_point(self):
-        return self.points.all()[0]
 
 
 class Point(Common):

@@ -1,0 +1,41 @@
+{% extends "lizard_geodin/project.html" %}
+{% load i18n %}
+
+{% block content %}
+  <div class="textual-content">
+    <h1>{{ view.page_title }}</h1>
+    <dl>
+      <dt>Project</dt>
+      <dd>{{ view.measurement.project }}</dd>
+      <dt>Location type</dt>
+      <dd>{{ view.measurement.location_type }}</dd>
+      <dt>Investigation type</dt>
+      <dd>{{ view.measurement.investigation_type }}</dd>
+      <dt>Data type</dt>
+      <dd>{{ view.measurement.data_type }}</dd>
+
+      <dt>Available fields</dt>
+      <dd>{{ view.measurement.fields }}</dd>
+    </dl>
+
+    <p>
+      We have {{ view.num_points }} points with data. The first item's data:
+    </p>
+    <table class="table table-bordered">
+      {% for key, value in view.first_point.content_for_display %}
+        <tr><td>{{ key }}</td><td>{{ value }}</td></tr>
+      {% endfor %}
+    </table>
+    <p>
+      <a href="{% url lizard_geodin_flot_data point_id=view.first_point.id %}">
+        URL to flot graph data
+      </a>.
+    </p>
+    <div style="width: 500px; height: 240px;"
+         class="img-use-my-size flot-graph"
+         data-flot-graph-data-url="{% url lizard_geodin_flot_data point_id=view.first_point.id %}">
+    </div>
+    <input class="flot-graph-reload" type="button" value="Zoom uit" />
+
+  </div>
+{% endblock content %}
