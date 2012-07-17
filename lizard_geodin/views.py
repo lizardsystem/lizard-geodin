@@ -101,5 +101,5 @@ class MeasurementView(ProjectView):
 
 def point_flot_data(request, point_id=None):
     point = get_object_or_404(models.Point, pk=int(point_id))
-    the_json = json.dumps({'data': point.timeseries()})
-    return HttpResponse(the_json)
+    the_json = json.dumps({'data': point.timeseries()}, indent=2)
+    return HttpResponse(the_json, mimetype='application/json')
