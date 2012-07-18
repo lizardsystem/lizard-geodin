@@ -167,7 +167,7 @@ class DataType(Common):
         #     if key not in self.subitems_mapping:
         #         logger.debug("Unknown key %s: %s", key, the_json[key])
         self.metadata = {'fields': the_json.pop('Fields')}
-        # ^^^ I don't know if we actually need this.
+        # ^^^ Only used by Measure to show the fields in the .html right now.
         self.save()
 
 
@@ -383,6 +383,21 @@ class Measurement(models.Model):
     def fields(self):
         return ', '.join(self.data_type.metadata['fields'])
 
+
+class MeasurementConfiguration(models.Model):
+    # Point should point at us instead of measurement. If a measurement is
+    # split up into two 'real' measurementconfigurations, duplications of
+    # points is fine, really. Otherwise we get M2M mappings, which is messy.
+    #
+    # A measurementconfiguration should also have a list of fields it needs to
+    # show in the flot graph---perhaps just a piece of json with a mapping?
+    #
+    # Also a filter should be added. For instance filter on
+    # 'maker=companyname'.
+    #
+    # Everything is loaded on sync. So Project's load-json method should be
+    # changed.
+    pass
 
 class Point(Common):
     """Data point."""
