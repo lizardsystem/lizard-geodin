@@ -157,8 +157,6 @@ class DataType(Common):
 
     def update_from_json(self, the_json):
         # This one is custom!
-        pprint(the_json)
-        print "############"
         self.slug = the_json.pop(self.id_field)
         for our_field, json_field in self.field_mapping.items():
             if not json_field in the_json:
