@@ -1,11 +1,10 @@
 # Lots of copy/paste from lizard-riool, btw.  [reinout]
 # from __future__ import unicode_literals  # Mapnik dislikes this.
 import os
-import re
+import logging
 
 from django.conf import settings
 from django.contrib.gis import geos
-from django.db import connection
 from lizard_map import coordinates
 from lizard_map.workspace import WorkspaceItemAdapter
 from lizard_map.mapnik_helper import add_datasource_point
@@ -15,6 +14,7 @@ from lizard_map.symbol_manager import SymbolManager
 import mapnik
 
 from lizard_geodin import models
+
 
 
 EPSILON = 0.0001
@@ -31,6 +31,8 @@ PARAMS = {
 ICON_STYLE = {'icon': 'meetpuntPeil.png',
               'mask': ('meetpuntPeil_mask.png', ),
               'color': (0, 0, 1, 0)}
+
+logger = logging.getLogger(__name__)
 
 
 def html_to_mapnik(color):
@@ -118,7 +120,6 @@ class GeodinPoints(WorkspaceItemAdapter):
         south = None
         east = None
         west = None
-
         wgs0coord_x, wgs0coord_y = coordinates.rd_to_wgs84(0.0, 0.0)
         for point in self.measurement.points.all():
             x = point.location.x
@@ -134,12 +135,16 @@ class GeodinPoints(WorkspaceItemAdapter):
                     south = y
                 if y > north or north is None:
                     north = y
+        if north is None:
+            logger.warn("Data points are all at (0, 0) RD, cannot calculate "
+                        "extent!")
+            return
 
         west_transformed, north_transformed = coordinates.wgs84_to_google(
             west, north)
         east_transformed, south_transformed = coordinates.wgs84_to_google(
             east, south)
-        return {
+        return  {
             'north': north_transformed,
             'west': west_transformed,
             'south': south_transformed,

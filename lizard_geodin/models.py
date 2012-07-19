@@ -111,7 +111,6 @@ class Common(models.Model):
                         json_item, already_handled=already_handled)
         return obj
 
-
     def json_from_source_url(self):
         """Return json from our source_url.
 
@@ -422,19 +421,6 @@ class Point(Common):
         null=True,
         blank=True)
     objects = models.GeoManager()
-
-    what_it_looks_like = {
-        'Name': 'S1',
-        'Ycoord': '1337.779',
-        'Zcoord': '1.6685',
-        'Url':
-            'http://borealis.fugro-nederland.nl/borportal/geodinwebservice.exe/getportalpage?layout=Prism_Deformation_1_All&portal=10&objectid1=NIJ0010007SEN000',
-        '__type': 'GdpMeasurementPoint:#ServiceLibrary',
-        'Xcoord': '959.1575',
-        'Dx': '0',
-        'Dy': '0',
-        'Geodpoint': 'M',
-        'Dz': '0'}
 
     class Meta:
         verbose_name = _('point with data')
