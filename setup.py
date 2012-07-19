@@ -36,6 +36,9 @@ setup(name='lizard-geodin',
       zip_safe=False,
       install_requires=install_requires,
       entry_points={
+        'lizard_map.adapter_class': [
+            'lizard_geodin_points = lizard_geodin.layers:GeodinPoints',
+            ],
           'console_scripts': [
           ]},
       )

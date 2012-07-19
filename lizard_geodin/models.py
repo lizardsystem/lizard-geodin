@@ -1,30 +1,18 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
 from __future__ import unicode_literals
 from collections import defaultdict
-from pprint import pprint
 import logging
 
+from django.contrib.gis.db import models
+from django.contrib.gis.geos import Point as GeosPoint
 from django.core.urlresolvers import reverse
-from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from jsonfield import JSONField
-import requests
+from lizard_map import coordinates
 import dateutil.parser
+import requests
 
 logger = logging.getLogger(__name__)
-
-
-# Notes: the source_url isn't our own source, but the url of our list of
-# subitems.
-# And the subitems aren't all unique, they might be pre-existing.
-# So: update them, but maintain a list somewhere of items that have been
-# recently changed, otherwise it takes a long time.
-# But I fear there's a lot of m2m stuff around.
-# Perhaps work around it with json?
-#
-# The hierarchy is a display hierarchy, really, not a database hierarchy. So
-# perhaps I just need to store the hierarchy with name and slug per project?
-# And retain the real DB objects for extra info about those items?
 
 
 class Common(models.Model):
@@ -235,6 +223,9 @@ class Project(Common):
         What we receive is a list of location types. In the end, we get
         location types and data types and measures, which are a set of points.
 
+        Note: the hierarchy is depended upon by ``ProjectView`` in our
+        ``views.py``.
+
         """
         the_json = self.json_from_source_url()
         already_handled = defaultdict(list)
@@ -278,8 +269,12 @@ class Project(Common):
                     for point_dict in points:
                         point = Point.create_or_update_from_json(point_dict)
                         point.measurement = measurement
+                        point.set_location_from_xy()
                         point.save()
                     level3['measurement_url'] = measurement.get_absolute_url()
+                    level3['measurement_id'] = measurement.id
+                    # TODO: this'll be possibly multiple
+                    # MeasurementConfigurations instead.
                 level1['subitems'].append(level2)
             hierarchy.append(level1)
         if self.metadata is None:
@@ -384,20 +379,21 @@ class Measurement(models.Model):
         return ', '.join(self.data_type.metadata['fields'])
 
 
-class MeasurementConfiguration(models.Model):
-    # Point should point at us instead of measurement. If a measurement is
-    # split up into two 'real' measurementconfigurations, duplications of
-    # points is fine, really. Otherwise we get M2M mappings, which is messy.
-    #
-    # A measurementconfiguration should also have a list of fields it needs to
-    # show in the flot graph---perhaps just a piece of json with a mapping?
-    #
-    # Also a filter should be added. For instance filter on
-    # 'maker=companyname'.
-    #
-    # Everything is loaded on sync. So Project's load-json method should be
-    # changed.
-    pass
+# class MeasurementConfiguration(models.Model):
+#     # Point should point at us instead of measurement. If a measurement is
+#     # split up into two 'real' measurementconfigurations, duplications of
+#     # points is fine, really. Otherwise we get M2M mappings, which is messy.
+#     #
+#     # A measurementconfiguration should also have a list of fields it needs to
+#     # show in the flot graph---perhaps just a piece of json with a mapping?
+#     #
+#     # Also a filter should be added. For instance filter on
+#     # 'maker=companyname'.
+#     #
+#     # Everything is loaded on sync. So Project's load-json method should be
+#     # changed.
+#     pass
+
 
 class Point(Common):
     """Data point."""
@@ -422,6 +418,10 @@ class Point(Common):
             "Geodin URL that gives the last couple of days' data."),
         null=True,
         blank=True)
+    location = models.PointField(
+        null=True,
+        blank=True)
+    objects = models.GeoManager()
 
     what_it_looks_like = {
         'Name': 'S1',
@@ -476,3 +476,7 @@ class Point(Common):
                          'data': data}
             result.append(flot_line)
         return result
+
+    def set_location_from_xy(self):
+        """x/y is assumed to be in RD."""
+        self.location = GeosPoint(coordinates.rd_to_wgs84(self.x, self.y))

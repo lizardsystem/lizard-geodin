@@ -8,8 +8,13 @@ from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
 from lizard_ui.layout import Action
 from lizard_ui.views import UiView
+from lizard_map.views import AppView
+from lizard_map.lizard_widgets import WorkspaceAcceptable
 
 from lizard_geodin import models
+
+
+ADAPTER_NAME = 'lizard_geodin_points'
 
 
 def _breadcrumb_element(obj):
@@ -29,7 +34,7 @@ class ProjectsOverview(UiView):
         return models.Project.objects.all()
 
 
-class ProjectView(UiView):
+class ProjectView(AppView):
     """View for a project's data selection hierarchy."""
     template_name = 'lizard_geodin/project.html'
 
@@ -60,7 +65,21 @@ class ProjectView(UiView):
 
     @property
     def hierarchy(self):
-        return self.project.metadata['hierarchy']
+        tree = self.project.metadata['hierarchy']
+        for level1 in tree:
+            for level2 in level1['subitems']:
+                for level3 in level2['subitems']:
+                    if 'measurement_id' in level3:
+                        # Add it as a WorkspaceAcceptable.
+                        id = level3['measurement_id']
+                        measurement = models.Measurement.objects.get(id=id)
+                        acceptable = WorkspaceAcceptable(
+                            name=measurement.name,
+                            adapter_name=ADAPTER_NAME,
+                            adapter_layer_json={
+                                'measurement_id': id})
+                        level3['acceptable'] = acceptable
+        return tree
 
     @property
     def measurements(self):

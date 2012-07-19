@@ -1,49 +1,41 @@
-{% extends "lizard_ui/lizardbase.html" %}
+{% extends "lizard_map/wms.html" %}
 {% load i18n %}
 
 {% block sidebar %}
-<h2>{% trans "Geodin hierarchy" %}</h2>
+  <h2>{% trans "Geodin hierarchy" %}</h2>
 
-{% for location in view.hierarchy %}
-  <h3>{{ location.name }}</h3>
-  <ul>
-    {% for investigation in location.subitems %}
-      <li>{{ investigation.name }}</li>
-      <ul>
-        {% for datatype in investigation.subitems %}
-          <li>{{ datatype.name }}</li>
-          {% if datatype.measurement_url %}
-            <ul>
-              <li>
-                <a href="{{ datatype.measurement_url }}">
-                  {% trans "Measurement" %}
-                </a>
-              </li>
-            </ul>
-          {% endif %}
-        {% endfor %}
-      </ul>
-    {% endfor %}
-  </ul>
-{% endfor %}
-
-
-
-{% endblock sidebar %}
-
-
-{% block content %}
-  <div class="textual-content">
-    <h1>{{ view.project.name }}</h1
-    <p>{% trans "Measurements" %}</p>
+  {% for location in view.hierarchy %}
+    <h3>{{ location.name }}</h3>
     <ul>
-      {% for measurement in view.measurements %}
-        <li>
-          <a href="{{ measurement.get_absolute_url }}">
-            {{ measurement.name }}
-          </a>
-        </li>
+      {% for investigation in location.subitems %}
+        <li>{{ investigation.name }}</li>
+        <ul>
+          {% for datatype in investigation.subitems %}
+            <li>{{ datatype.name }}</li>
+            {% if datatype.acceptable %}
+              <ul>
+                <li>
+                  {{ datatype.acceptable.to_html }}
+                </li>
+              </ul>
+            {% endif %}
+          {% endfor %}
+        </ul>
       {% endfor %}
     </ul>
-  </div>
-{% endblock content %}
+  {% endfor %}
+
+  <h2>{% trans "Measurements" %}</h2>
+  <p>
+    Textual debug information about measurements.
+  </p>
+  <ul>
+    {% for measurement in view.measurements %}
+      <li>
+        <a href="{{ measurement.get_absolute_url }}">
+          {{ measurement.name }}
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock sidebar %}
