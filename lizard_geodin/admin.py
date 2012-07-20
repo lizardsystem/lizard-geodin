@@ -67,9 +67,16 @@ class MeasurementAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'project', 'location_type', 'investigation_type', 'data_type')
 
 
+class MeasurementConfigurationAdmin(admin.ModelAdmin):
+    prepopulated_fields = {"slug": ("name",)}
+    list_display = ('slug', 'name', 'measurement')
+
+
 admin.site.register(models.Project, ProjectAdmin)
 admin.site.register(models.Measurement, MeasurementAdmin)
+admin.site.register(models.MeasurementConfiguration, MeasurementConfigurationAdmin)
 admin.site.register(models.ApiStartingPoint, ApiStartingPointAdmin)
 admin.site.register(models.LocationType)
 admin.site.register(models.InvestigationType)
 admin.site.register(models.DataType)
+admin.site.register(models.Point)

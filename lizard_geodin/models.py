@@ -378,20 +378,51 @@ class Measurement(models.Model):
         return ', '.join(self.data_type.metadata['fields'])
 
 
-# class MeasurementConfiguration(models.Model):
-#     # Point should point at us instead of measurement. If a measurement is
-#     # split up into two 'real' measurementconfigurations, duplications of
-#     # points is fine, really. Otherwise we get M2M mappings, which is messy.
-#     #
-#     # A measurementconfiguration should also have a list of fields it needs to
-#     # show in the flot graph---perhaps just a piece of json with a mapping?
-#     #
-#     # Also a filter should be added. For instance filter on
-#     # 'maker=companyname'.
-#     #
-#     # Everything is loaded on sync. So Project's load-json method should be
-#     # changed.
-#     pass
+class MeasurementConfiguration(models.Model):
+    # A measurementconfiguration has a list of fields it needs to
+    # show in the flot graph. Just fieldname/label mappings. This is already
+    # used in the timeseries() method of Point, which we can pass a
+    # measurement configuration (which doesn't happen yet in the code
+    # anywhere, though). If so, our field/label mapping is used instead of a
+    # automatically detected one.
+    #
+    # Also a filter should be added. For instance filter on
+    # 'Leverancier=companyname'. Filter points based on their metadata dict
+    # (where 'Leverancier' will end up in). And probably some caching to point
+    # at the correct points. Refresh this when you refresh the project.
+    #
+    # I'd suggest using the generated Measurement in in the interface UNLESS
+    # there are MeasurementConfigurations. Alternatively, always generate an
+    # empty MeasurementConfiguration when generating a Measurement (in
+    # Project's big update-myself-from-json method). In that case, we can look
+    # solely at MeasurementConfigurations instead of Measurements in the rest
+    # of the interface.
+
+    name = models.CharField(
+        _('name'),
+        max_length=50,
+        null=True,
+        blank=True)
+    slug = models.SlugField(
+        _('slug'),
+        help_text=_("Set automatically from the name"))
+    measurement = models.ForeignKey(
+        'Measurement',
+        null=True,
+        blank=True,
+        related_name='measurement_configurations')
+    metadata_filter = JSONField(
+        _('metadata filter'),
+        help_text=_("Filters points. The key/value(s) is looked up "
+                    "in the points' metadata."),
+        null=True,
+        blank=True)
+    flot_fields = JSONField(
+        _('flot fields'),
+        help_text=_("Fields used in flot. Key/value mapping: field/label."),
+        null=True,
+        blank=True)
+
 
 
 class Point(Common):
@@ -436,29 +467,55 @@ class Point(Common):
             result.update(self.metadata)
         return sorted(result.items())
 
-    def timeseries(self):
-        """Return last couple of days' timeseries data.
+    def timeseries(self, measurement_configuration=None):
+        """Return last couple of days' timeseries data for flot.
 
         Note that it doesn't have to be one single timeserie. You can have
         (dx, dy, dz), for instance.
 
         What it returns is a list of dictionaries with 'label' and 'data' for
         flot. You can add 'color' and so yourself afterwards.
+
+        If a measurement_configuration is provided, we use that to
+        filter/configure our output. For instance by not including all
+        columns.
+
         """
         the_json = self.json_from_source_url()
         # Perhaps add caching, it seems to take quite some time.
         lines = defaultdict(list)
+        result = []
+        if not the_json:
+            # Empty.
+            return result
+        if measurement_configuration is not None:
+            # We use the fieldname/label mapping from the configuration. This
+            # might mean we show less fields (only temperature and not both
+            # temperature and dx/dy/dz for instance). And the fields now have
+            # proper labels.
+            fields = measurement_configuration.flot_fields
+        else:
+            # Detect them from our first item.
+            # fields is a fieldname/label mapping.
+            first_one_fields = the_json[0].keys()
+            first_one_fields = [field for field in first_one_fields
+                                if not field.startswith('_')]
+            first_one_fields.remove('Id')
+            first_one_fields.remove('Date')
+            fields = {}
+            for field in first_one_fields:
+                label = field  # We don't have any other.
+                fields[field] = label
+
         for timestep in the_json:
-            timestep.pop('Id')
             date = dateutil.parser.parse(timestep.pop('Date'))
             timestamp_in_seconds = int(date.strftime("%s"))
             timestamp_in_ms = 1000 * timestamp_in_seconds
             # See http://people.iola.dk/olau/flot/examples/time.html
-            for key in timestep:
-                lines[key].append((timestamp_in_ms, timestep[key]))
-        result = []
-        for label, data in lines.items():
-            flot_line = {'label': label,
+            for field in fields:
+                lines[field].append((timestamp_in_ms, timestep[field]))
+        for field, data in lines.items():
+            flot_line = {'label': fields[field],
                          'data': data}
             result.append(flot_line)
         return result
