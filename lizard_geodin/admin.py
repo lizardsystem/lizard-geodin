@@ -1,8 +1,8 @@
 from __future__ import unicode_literals
 import logging
 
-from django.contrib import admin
 from django.contrib import messages
+from django.contrib.gis import admin
 from django.utils.translation import ugettext as _
 
 from lizard_geodin import models
@@ -72,6 +72,10 @@ class MeasurementConfigurationAdmin(admin.ModelAdmin):
     list_display = ('slug', 'name', 'measurement')
 
 
+class PointAdmin(admin.GeoModelAdmin):
+    pass
+
+
 admin.site.register(models.Project, ProjectAdmin)
 admin.site.register(models.Measurement, MeasurementAdmin)
 admin.site.register(models.MeasurementConfiguration, MeasurementConfigurationAdmin)
@@ -79,4 +83,4 @@ admin.site.register(models.ApiStartingPoint, ApiStartingPointAdmin)
 admin.site.register(models.LocationType)
 admin.site.register(models.InvestigationType)
 admin.site.register(models.DataType)
-admin.site.register(models.Point)
+admin.site.register(models.Point, PointAdmin)
