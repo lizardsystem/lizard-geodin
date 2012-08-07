@@ -1,3 +1,30 @@
+<html>
+<body>
+ <script type="text/javascript"
+            src="/static_media/jquery/jquery.min.js"></script>
+    <script type="text/javascript"
+            src="/static_media/bootstrap/bootstrap.min.js"></script>
+    <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="/static_media/jquery-flot/excanvas.min.js"></script><![endif]-->
+
+        <script type="text/javascript"
+                src="/static_media/lizard_ui/csrf.js"></script>
+        <script type="text/javascript"
+                src="/static_media/lizard_ui/lizard.js"></script>
+        <script type="text/javascript"
+                src="/static_media/lizard_ui/lizardui.js"></script>
+        <script type="text/javascript"
+                src="/static_media/jquerytools/jquery.tools.min.js"></script>
+        <script type="text/javascript"
+                src="/static_media/jqueryui/jqueryui.min.js"></script>
+        <script type="text/javascript"
+                src="/static_media/jquery-treeview/jquery.treeview.js"></script>
+        <script type="text/javascript"
+                src="/static_media/jquery-flot/jquery.flot.js"></script>
+        <script type="text/javascript"
+                src="/static_media/jquery-flot/jquery.flot.selection.js"></script>
+        <script type="text/javascript"
+                src="/static_media/jquery-flot/jquery.flot.axislabels.js"></script>
+
     <h1>{{ view.page_title }}</h1>
     <p>
       <a href="{% url lizard_geodin_flot_data point_id=view.first_point.id %}">
@@ -33,3 +60,6 @@
         <tr><td>{{ key }}</td><td>{{ value }}</td></tr>
       {% endfor %}
     </table>
+
+</body>
+  </html>
