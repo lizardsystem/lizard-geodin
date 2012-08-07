@@ -6,8 +6,11 @@ import json
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
+from django.views.generic.base import TemplateView
+
 from lizard_ui.layout import Action
 from lizard_ui.views import UiView
+from lizard_ui.views import ViewContextMixin
 from lizard_map.views import AppView
 from lizard_map.lizard_widgets import WorkspaceAcceptable
 
@@ -122,3 +125,20 @@ def point_flot_data(request, point_id=None):
     point = get_object_or_404(models.Point, pk=int(point_id))
     the_json = json.dumps({'data': point.timeseries()}, indent=2)
     return HttpResponse(the_json, mimetype='application/json')
+
+
+class MeasurementPopupView(ViewContextMixin, TemplateView):
+    template_name = 'lizard_geodin/measurement_popup.html'
+
+    @property
+    def measurement(self):
+        """Return selected measurement"""
+        return get_object_or_404(models.Measurement, pk=self.kwargs['measurement_id'])
+
+    @property
+    def num_points(self):
+        return self.measurement.points.count()
+
+    @property
+    def first_point(self):
+        return self.measurement.points.all()[0]

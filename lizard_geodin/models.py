@@ -374,6 +374,10 @@ class Measurement(models.Model):
                        kwargs={'slug': self.project.slug,
                                'measurement_id': self.id})
 
+    def get_popup_url(self):
+        return reverse('lizard_geodin_measurement_popup_view',
+                       kwargs={'measurement_id': self.id})
+
     def fields(self):
         return ', '.join(self.data_type.metadata['fields'])
 
