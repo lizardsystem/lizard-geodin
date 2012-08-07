@@ -453,6 +453,8 @@ class Point(Common):
         null=True,
         blank=True)
     location = models.PointField(
+        help_text=_(
+            "Generated automatically from the x/y/z values."),
         null=True,
         blank=True)
     objects = models.GeoManager()
