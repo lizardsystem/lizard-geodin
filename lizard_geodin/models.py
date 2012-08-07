@@ -95,7 +95,7 @@ class Common(models.Model):
         if already_handled is not None:
             if slug in already_handled[cls]:
                 logger.debug("Slug %s already handled, omitting", slug)
-                return
+                return cls.objects.get(slug=slug)
         kwargs = {'slug': slug}
         kwargs.update(extra_kwargs)
         obj, is_created = cls.objects.get_or_create(**kwargs)
