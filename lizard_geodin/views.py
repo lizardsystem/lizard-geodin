@@ -33,8 +33,16 @@ class ProjectsOverview(UiView):
     edit_link = '/admin/lizard_geodin/apistartingpoint/'
 
     def projects(self):
-        """Return all projects."""
-        return models.Project.objects.all()
+        """Return all active projects."""
+        return models.Project.objects.filter(active=True)
+
+    def show_activation_hint(self):
+        """Return True if projects exist, but none are active."""
+        if self.projects():
+            return False
+        if models.Project.objects.exists():
+            return True
+        return False
 
 
 class ProjectView(AppView):
@@ -52,7 +60,10 @@ class ProjectView(AppView):
 
     @property
     def project(self):
-        return get_object_or_404(models.Project, slug=self.kwargs['slug'])
+        """Return project (if it is active)."""
+        return get_object_or_404(models.Project,
+                                 slug=self.kwargs['slug'],
+                                 active=True)
 
     # @property
     # def location_types(self):

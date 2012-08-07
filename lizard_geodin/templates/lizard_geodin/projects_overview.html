@@ -12,6 +12,11 @@
       </li>
     {% endfor %}
   </ul>
+  {% if view.show_activation_hint %}
+    <p>
+      {% trans "There are projects, but none have been activated in the admin." %}
+    </p>
+  {% endif %}
 {% endblock sidebar %}
 
 
