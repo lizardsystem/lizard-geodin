@@ -126,64 +126,6 @@ class Common(models.Model):
         return response.json
 
 
-class DataType(Common):
-    """Type of measurement that has been done.
-
-    You need to do something with an investigation type. The data type tells
-    you what you did with it, like analyzing it in a geotechnical lab. It
-    results in a set of parameters like "dx=..., dy=..., dz=...".
-    """
-    field_mapping = {'name': 'Name'}
-
-    # Probably TODO: add parameters via extra json field? Including their
-    # description?
-
-    class Meta:
-        verbose_name = _('data type')
-        verbose_name_plural = _('data types')
-
-    def update_from_json(self, the_json):
-        # This one is custom!
-        self.slug = the_json.pop(self.id_field)
-        for our_field, json_field in self.field_mapping.items():
-            if not json_field in the_json:
-                # logger.warn("Field %s not available in %r", json_field, self)
-                continue
-            setattr(self, our_field, the_json.pop(json_field))
-        # for key in the_json:
-        #     if key not in self.subitems_mapping:
-        #         logger.debug("Unknown key %s: %s", key, the_json[key])
-        self.metadata = {'fields': the_json.pop('Fields')}
-        # ^^^ Only used by Measure to show the fields in the .html right now.
-        self.save()
-
-
-class InvestigationType(Common):
-    """Source of the measures.
-
-    Source means where the measure physically came from. A ground sample, for
-    instance.
-    """
-    field_mapping = {'name': 'Name'}
-    subitems_mapping = {'DataTypes': DataType}
-    # create_subitems = True
-
-    class Meta:
-        verbose_name = _('investigation type')
-        verbose_name_plural = _('investigation types')
-
-
-class LocationType(Common):
-    """Unknown; seems to be for setting attributes."""
-    field_mapping = {'name': 'Name'}
-    subitems_mapping = {'InvestigationTypes': InvestigationType}
-    # create_subitems = True
-
-    class Meta:
-        verbose_name = _('location type')
-        verbose_name_plural = _('location types')
-
-
 class Project(Common):
     """Geodin project, it is the starting point for the API.
     """
@@ -345,21 +287,21 @@ class Measurement(models.Model):
         null=True,
         blank=True,
         related_name='measurements')
-    location_type = models.ForeignKey(
-        'LocationType',
+    location_type_name = models.CharField(
+        _('location type'),
+        max_length=50,
         null=True,
-        blank=True,
-        related_name='measurements')
-    investigation_type = models.ForeignKey(
-        'InvestigationType',
+        blank=True)
+    investigation_type_name = models.CharField(
+        _('location type'),
+        max_length=50,
         null=True,
-        blank=True,
-        related_name='measurements')
-    data_type = models.ForeignKey(
-        'DataType',
+        blank=True)
+    data_type_name = models.CharField(
+        _('location type'),
+        max_length=50,
         null=True,
-        blank=True,
-        related_name='measurements')
+        blank=True)
     supplier = models.ForeignKey(
         'Supplier',
         null=True,
