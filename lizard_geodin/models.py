@@ -6,6 +6,7 @@ import logging
 from django.contrib.gis.db import models
 from django.contrib.gis.geos import Point as GeosPoint
 from django.core.urlresolvers import reverse
+from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 from jsonfield import JSONField
 from lizard_map import coordinates
@@ -178,22 +179,47 @@ class Project(Common):
                     points = data_dict.pop('Points')
                     data_type_name = data_dict['Name']
                     if not points:
-                        logger.debug("No measurements found.")
+                        logger.debug(
+                            "No points found, not creating a measurement.")
                         continue
-                    name = ', '.join([self.name,
-                                      location_type_name,
-                                      investigation_type_name,
-                                      data_type_name])
-                    measurement, created = Measurement.objects.get_or_create(
-                        project=self,
-                        location_type_name=location_type_name,
-                        investigation_type_name=investigation_type_name,
-                        data_type_name=data_type_name)
-                    if created:
-                        logger.debug("Created a new measurement: %s", name)
-                    measurement.name = name
-                    measurement.save()
                     for point_dict in points:
+                        # Get supplier.
+                        supplier_name = point_dict.pop('Leverancier')
+                        supplier_slug = slugify(supplier_name)
+                        supplier, is_created = Supplier.objects.get_or_create(
+                            slug=supplier_slug)
+                        if is_created:
+                            supplier.name = supplier_name
+                            supplier.save()
+                        # Get parameter.
+                        parameter_name = point_dict.pop('Description')
+                        parameter_slug = slugify(parameter_name)
+                        parameter, is_created = Parameter.objects.get_or_create(
+                            slug=parameter_slug)
+                        if is_created:
+                            parameter.name = parameter_name
+                            parameter.save()
+                        # Get measurement.
+                        measurement_name = '{project}: {parameter} ({supplier})'.format(
+                            project=self.name,
+                            parameter=parameter_name,
+                            supplier=supplier_name)
+                        measurement, created = Measurement.objects.get_or_create(
+                            project=self,
+                            parameter=parameter,
+                            supplier=supplier)
+                        if created:
+                            logger.debug("Created a new measurement: %s",
+                                         measurement_name)
+                            measurement.location_type_name = location_type_name
+                            measurement.investigation_type_name = investigation_type_name
+                            measurement.data_type_name = data_type_name
+                            measurement.name = measurement_name
+                            measurement.save()
+                        else:
+                            logger.debug("Reusing existing measurement: %s",
+                                         measurement_name)
+
                         point = Point.create_or_update_from_json(point_dict)
                         point.measurement = measurement
                         point.set_location_from_xy()
