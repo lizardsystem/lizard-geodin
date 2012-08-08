@@ -1,2 +1,38 @@
+<html>
+<body>
+ <script type="text/javascript"
+            src="/static_media/jquery/jquery.min.js"></script>
+    <script type="text/javascript"
+            src="/static_media/bootstrap/bootstrap.min.js"></script>
+    <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="/static_media/jquery-flot/excanvas.min.js"></script><![endif]-->
+
+        <script type="text/javascript"
+                src="/static_media/lizard_ui/csrf.js"></script>
+        <script type="text/javascript"
+                src="/static_media/lizard_ui/lizard.js"></script>
+        <script type="text/javascript"
+                src="/static_media/lizard_ui/lizardui.js"></script>
+        <script type="text/javascript"
+                src="/static_media/jquerytools/jquery.tools.min.js"></script>
+        <script type="text/javascript"
+                src="/static_media/jqueryui/jqueryui.min.js"></script>
+        <script type="text/javascript"
+                src="/static_media/jquery-treeview/jquery.treeview.js"></script>
+        <script type="text/javascript"
+                src="/static_media/jquery-flot/jquery.flot.js"></script>
+        <script type="text/javascript"
+                src="/static_media/jquery-flot/jquery.flot.selection.js"></script>
+        <script type="text/javascript"
+                src="/static_media/jquery-flot/jquery.flot.axislabels.js"></script>
+
 popup voor
 {{ view.point }}
+
+
+     <div style="width: 900px; height: 240px;"
+         class="img-use-my-size flot-graph"
+         data-flot-graph-data-url="{% url lizard_geodin_flot_data point_id=view.point.id %}">
+    </div>
+
+</body>
+  </html>
