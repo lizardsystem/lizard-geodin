@@ -39,5 +39,20 @@
       {% endfor %}
     </ul>
 
+    <h2>{% trans "Measurements" %}</h2>
+    <p>
+      Textual debug information about measurements.
+    </p>
+    <ul>
+      {% for measurement in view.measurements %}
+        <li>
+          <a href="{{ measurement.get_absolute_url }}">
+            {{ measurement.name }}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+
+
   </div>
 {% endblock content %}

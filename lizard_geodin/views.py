@@ -1,5 +1,6 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
 from __future__ import unicode_literals
+from collections import defaultdict
 import json
 
 # from lizard_map.views import MapView
@@ -12,12 +13,8 @@ from lizard_ui.layout import Action
 from lizard_ui.views import UiView
 from lizard_ui.views import ViewContextMixin
 from lizard_map.views import AppView
-from lizard_map.lizard_widgets import WorkspaceAcceptable
 
 from lizard_geodin import models
-
-
-ADAPTER_NAME = 'lizard_geodin_points'
 
 
 def _breadcrumb_element(obj):
@@ -39,6 +36,10 @@ class ProjectsOverview(UiView):
     def suppliers(self):
         """Return all suppliers."""
         return models.Supplier.objects.filter()
+
+    def measurements(self):
+        """Return all measurements."""
+        return models.Measurement.objects.filter()
 
     def show_activation_hint(self):
         """Return True if projects exist, but none are active."""
@@ -69,39 +70,15 @@ class ProjectView(AppView):
                                  slug=self.kwargs['slug'],
                                  active=True)
 
-    # @property
-    # def location_types(self):
-    #     return models.LocationType.objects.all()
-
-    # @property
-    # def investigation_types(self):
-    #     return models.InvestigationType.objects.all()
-
-    # @property
-    # def data_types(self):
-    #     return models.DataType.objects.all()
-
     @property
-    def hierarchy(self):
-        tree = self.project.metadata['hierarchy']
-        for level1 in tree:
-            for level2 in level1['subitems']:
-                for level3 in level2['subitems']:
-                    if 'measurement_id' in level3:
-                        # Add it as a WorkspaceAcceptable.
-                        id = level3['measurement_id']
-                        measurement = models.Measurement.objects.get(id=id)
-                        acceptable = WorkspaceAcceptable(
-                            name=measurement.name,
-                            adapter_name=ADAPTER_NAME,
-                            adapter_layer_json={
-                                'measurement_id': id})
-                        level3['acceptable'] = acceptable
-        return tree
-
-    @property
-    def measurements(self):
-        return self.project.measurements.all()
+    def suppliers(self):
+        suppliers = defaultdict(list)
+        for measurement in self.project.measurements.all():
+            suppliers[measurement.supplier].append(measurement)
+        result = []
+        for supplier in sorted(suppliers.keys()):
+            result.append((supplier, suppliers[supplier]))
+        return result
 
     @property
     def breadcrumbs(self):

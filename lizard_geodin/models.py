@@ -10,8 +10,11 @@ from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 from jsonfield import JSONField
 from lizard_map import coordinates
+from lizard_map.lizard_widgets import WorkspaceAcceptable
 import dateutil.parser
 import requests
+
+ADAPTER_NAME = 'lizard_geodin_points'
 
 logger = logging.getLogger(__name__)
 
@@ -324,8 +327,7 @@ class Measurement(models.Model):
 
     def get_absolute_url(self):
         return reverse('lizard_geodin_measurement_view',
-                       kwargs={'slug': self.project.slug,
-                               'measurement_id': self.id})
+                       kwargs={'measurement_id': self.id})
 
     def get_popup_url(self):
         return reverse('lizard_geodin_measurement_popup_view',
@@ -333,6 +335,12 @@ class Measurement(models.Model):
 
     def fields(self):
         return ', '.join(self.data_type.metadata['fields'])
+
+    def workspace_acceptable(self):
+        return WorkspaceAcceptable(
+            name=self.name,
+            adapter_name=ADAPTER_NAME,
+            adapter_layer_json={'measurement_id': self.id})
 
 
 class Supplier(models.Model):
