@@ -29,12 +29,16 @@ def _breadcrumb_element(obj):
 class ProjectsOverview(UiView):
     """Simple overview page with list of projects."""
     template_name = 'lizard_geodin/projects_overview.html'
-    page_title = _('Overview of Geodin projects')
+    page_title = _('Overview of Geodin data')
     edit_link = '/admin/lizard_geodin/apistartingpoint/'
 
     def projects(self):
         """Return all active projects."""
         return models.Project.objects.filter(active=True)
+
+    def suppliers(self):
+        """Return all suppliers."""
+        return models.Supplier.objects.filter()
 
     def show_activation_hint(self):
         """Return True if projects exist, but none are active."""
@@ -103,6 +107,11 @@ class ProjectView(AppView):
     def breadcrumbs(self):
         base = super(ProjectView, self).breadcrumbs
         return base + [_breadcrumb_element(self.project)]
+
+
+class SupplierView(ProjectView):
+    # TODO
+    pass
 
 
 class MeasurementView(ProjectView):

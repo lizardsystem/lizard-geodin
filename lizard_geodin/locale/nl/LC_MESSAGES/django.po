@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-08 09:05-0500\n"
-"PO-Revision-Date: 2012-07-13 13:55+0200\n"
+"POT-Creation-Date: 2012-08-08 09:38-0500\n"
+"PO-Revision-Date: 2012-08-08 16:37+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -25,15 +25,15 @@ msgstr "Herlaad projectenlijst via de API"
 msgid "Update project from API"
 msgstr "Update project via de API"
 
-#: models.py:52 models.py:276 models.py:359 models.py:387 models.py:406
+#: models.py:52 models.py:276 models.py:341 models.py:364
 msgid "name"
 msgstr "naam"
 
-#: models.py:57 models.py:364 models.py:392 models.py:411
+#: models.py:57 models.py:346 models.py:369
 msgid "slug"
 msgstr "id in URL"
 
-#: models.py:58 models.py:393 models.py:412
+#: models.py:58 models.py:347 models.py:370
 msgid "Often set automatically from the internal Geodin ID"
 msgstr "Wordt normaliter automatisch gezet vanuit Geodin's interne ID."
 
@@ -93,117 +93,79 @@ msgstr "meting"
 msgid "measurements"
 msgstr "metingen"
 
-#: models.py:365
-#, fuzzy
-msgid "Set automatically from the name"
-msgstr "Wordt normaliter automatisch gezet vanuit Geodin's interne ID."
+#: models.py:357
+msgid "supplier"
+msgstr "leverancier"
+
+#: models.py:358
+msgid "suppliers"
+msgstr "leveranciers"
 
 #: models.py:372
-#, fuzzy
-msgid "metadata filter"
-msgstr "metadata"
-
-#: models.py:373
-msgid "Filters points. The key/value(s) is looked up in the points' metadata."
-msgstr ""
-
-#: models.py:378
-msgid "flot fields"
-msgstr ""
-
-#: models.py:379
-msgid "Fields used in flot. Key/value mapping: field/label."
-msgstr ""
-
-#: models.py:399
-msgid "supplier"
-msgstr ""
-
-#: models.py:400
-msgid "suppliers"
-msgstr ""
-
-#: models.py:414
 msgid "unit"
-msgstr ""
+msgstr "eenheid"
 
-#: models.py:423
+#: models.py:381
 msgid "parameter of a measurement"
-msgstr ""
+msgstr "parameter van een meting"
 
-#: models.py:424
-#, fuzzy
+#: models.py:382
 msgid "parameters of measurements"
-msgstr "metingen"
+msgstr "parameters van metingen"
 
-#: models.py:445
+#: models.py:403
 msgid "timeseries url"
-msgstr ""
+msgstr "URL van de json met de tijdserie"
 
-#: models.py:447
-#, fuzzy
+#: models.py:405
 msgid "Geodin URL that gives the last couple of days' data."
 msgstr "URL in de Geodin API dat de lijst met projecten teruggeeft"
 
-#: models.py:452
-#, fuzzy
+#: models.py:410
 msgid "Generated automatically from the x/y/z values."
 msgstr "Wordt normaliter automatisch gezet vanuit Geodin's interne ID."
 
-#: models.py:458
+#: models.py:416
 msgid "point with data"
-msgstr ""
+msgstr "punt met data"
 
-#: models.py:459
+#: models.py:417
 msgid "points with data"
-msgstr ""
+msgstr "punten met data"
 
 #: views.py:32
-msgid "Overview of Geodin projects"
-msgstr "Overzicht van Geodin projecten"
+msgid "Overview of Geodin data"
+msgstr "Overzicht van Geodin data"
 
-#: views.py:54
+#: views.py:58
 msgid "Project {name}"
-msgstr ""
+msgstr "Project {name}"
 
-#: views.py:114
-#, fuzzy
+#: views.py:123
 msgid "Measurement {name}"
-msgstr "meting"
+msgstr "Meting {name}"
 
 #: templates/lizard_geodin/project.html:5
 msgid "Geodin hierarchy"
-msgstr ""
+msgstr "Geodin hierarchie"
 
 #: templates/lizard_geodin/project.html:28
-#, fuzzy
 msgid "Measurements"
-msgstr "metingen"
+msgstr "Metingen"
 
-#: templates/lizard_geodin/projects_overview.html:5
-#, fuzzy
-msgid "Projects"
-msgstr "projecten"
-
-#: templates/lizard_geodin/projects_overview.html:17
-msgid "There are projects, but none have been activated in the admin."
+#: templates/lizard_geodin/projects_overview.html:6
+msgid "Overview of the data imported from Fugro's Geodin system."
 msgstr ""
+"Overzicht van de data die uit Fugro's Geodin systeem wordt geïmporteerd."
+
+#: templates/lizard_geodin/projects_overview.html:15
+msgid "Projects"
+msgstr "Projecten"
 
 #: templates/lizard_geodin/projects_overview.html:27
-msgid "Select a Geodin project on the left."
-msgstr ""
+msgid "There are projects, but none have been activated in the admin."
+msgstr "Er zijn projecten, maar geen ervan is in de admin aangezet."
 
-#~ msgid "data type"
-#~ msgstr "datatype"
-
-#~ msgid "data types"
-#~ msgstr "datatypes"
-
-#~ msgid "investigation type"
-#~ msgstr "onderzoekstype"
-
-#~ msgid "investigation types"
-#~ msgstr "onderzoekstypes"
-
-#~ msgid "location types"
-#~ msgstr "locatietypes"
+#: templates/lizard_geodin/projects_overview.html:31
+msgid "Suppliers"
+msgstr "Leveranciers"

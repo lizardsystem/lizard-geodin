@@ -349,6 +349,10 @@ class Supplier(models.Model):
     def __unicode__(self):
         return self.name or self.slug
 
+    def get_absolute_url(self):
+        return reverse('lizard_geodin_supplier_view',
+                       kwargs={'slug': self.slug})
+
     class Meta:
         verbose_name = _('supplier')
         verbose_name_plural = _('suppliers')

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-08 09:05-0500\n"
+"POT-Creation-Date: 2012-08-08 09:38-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,15 +25,15 @@ msgstr ""
 msgid "Update project from API"
 msgstr ""
 
-#: models.py:52 models.py:276 models.py:359 models.py:387 models.py:406
+#: models.py:52 models.py:276 models.py:341 models.py:364
 msgid "name"
 msgstr ""
 
-#: models.py:57 models.py:364 models.py:392 models.py:411
+#: models.py:57 models.py:346 models.py:369
 msgid "slug"
 msgstr ""
 
-#: models.py:58 models.py:393 models.py:412
+#: models.py:58 models.py:347 models.py:370
 msgid "Often set automatically from the internal Geodin ID"
 msgstr ""
 
@@ -93,75 +93,55 @@ msgstr ""
 msgid "measurements"
 msgstr ""
 
-#: models.py:365
-msgid "Set automatically from the name"
-msgstr ""
-
-#: models.py:372
-msgid "metadata filter"
-msgstr ""
-
-#: models.py:373
-msgid "Filters points. The key/value(s) is looked up in the points' metadata."
-msgstr ""
-
-#: models.py:378
-msgid "flot fields"
-msgstr ""
-
-#: models.py:379
-msgid "Fields used in flot. Key/value mapping: field/label."
-msgstr ""
-
-#: models.py:399
+#: models.py:357
 msgid "supplier"
 msgstr ""
 
-#: models.py:400
+#: models.py:358
 msgid "suppliers"
 msgstr ""
 
-#: models.py:414
+#: models.py:372
 msgid "unit"
 msgstr ""
 
-#: models.py:423
+#: models.py:381
 msgid "parameter of a measurement"
 msgstr ""
 
-#: models.py:424
+#: models.py:382
 msgid "parameters of measurements"
 msgstr ""
 
-#: models.py:445
+#: models.py:403
 msgid "timeseries url"
 msgstr ""
 
-#: models.py:447
+#: models.py:405
 msgid "Geodin URL that gives the last couple of days' data."
 msgstr ""
 
-#: models.py:452
+#: models.py:410
 msgid "Generated automatically from the x/y/z values."
 msgstr ""
 
-#: models.py:458
+#: models.py:416
 msgid "point with data"
 msgstr ""
 
-#: models.py:459
+#: models.py:417
 msgid "points with data"
 msgstr ""
 
 #: views.py:32
-msgid "Overview of Geodin projects"
+msgid "Overview of Geodin data"
 msgstr ""
 
-#: views.py:54
+#: views.py:58
 msgid "Project {name}"
 msgstr ""
 
-#: views.py:114
+#: views.py:123
 msgid "Measurement {name}"
 msgstr ""
 
@@ -173,14 +153,18 @@ msgstr ""
 msgid "Measurements"
 msgstr ""
 
-#: templates/lizard_geodin/projects_overview.html:5
+#: templates/lizard_geodin/projects_overview.html:6
+msgid "Overview of the data imported from Fugro's Geodin system."
+msgstr ""
+
+#: templates/lizard_geodin/projects_overview.html:15
 msgid "Projects"
 msgstr ""
 
-#: templates/lizard_geodin/projects_overview.html:17
+#: templates/lizard_geodin/projects_overview.html:27
 msgid "There are projects, but none have been activated in the admin."
 msgstr ""
 
-#: templates/lizard_geodin/projects_overview.html:27
-msgid "Select a Geodin project on the left."
+#: templates/lizard_geodin/projects_overview.html:31
+msgid "Suppliers"
 msgstr ""
