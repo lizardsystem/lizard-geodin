@@ -86,9 +86,39 @@ class ProjectView(AppView):
         return base + [_breadcrumb_element(self.project)]
 
 
-class SupplierView(ProjectView):
-    # TODO
-    pass
+class SupplierView(AppView):
+    """View for a supplier's data overview."""
+    template_name = 'lizard_geodin/supplier.html'
+
+    @property
+    def page_title(self):
+        return _('Supplier {name}').format(name=self.supplier.name)
+
+    @property
+    def edit_link(self):
+        return '/admin/lizard_geodin/supplier/{pk}/'.format(
+            pk=self.supplier.pk)
+
+    @property
+    def supplier(self):
+        """Return supplier."""
+        return get_object_or_404(models.Supplier,
+                                 slug=self.kwargs['slug'])
+
+    @property
+    def projects(self):
+        projects = defaultdict(list)
+        for measurement in self.supplier.measurements.all():
+            projects[measurement.project].append(measurement)
+        result = []
+        for project in sorted(projects.keys()):
+            result.append((project, projects[project]))
+        return result
+
+    @property
+    def breadcrumbs(self):
+        base = super(SupplierView, self).breadcrumbs
+        return base + [_breadcrumb_element(self.supplier)]
 
 
 class MeasurementView(ProjectView):

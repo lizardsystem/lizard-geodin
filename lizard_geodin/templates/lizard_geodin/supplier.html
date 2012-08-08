@@ -1,0 +1,18 @@
+{% extends "lizard_map/wms.html" %}
+{% load i18n %}
+
+{% block sidebar %}
+  <h2>{% trans "Projects" %}</h2>
+
+  {% for project, measurements in view.projects %}
+    <h3>{{ project.name }}</h3>
+    <ul>
+      {% for measurement in measurements %}
+        <li>
+          {{ measurement.workspace_acceptable.to_html }}
+        </li>
+      {% endfor %}
+    </ul>
+  {% endfor %}
+
+{% endblock sidebar %}
