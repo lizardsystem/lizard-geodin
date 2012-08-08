@@ -529,3 +529,6 @@ class Point(Common):
     def set_location_from_xy(self):
         """x/y is assumed to be in RD."""
         self.location = GeosPoint(coordinates.rd_to_wgs84(self.x, self.y))
+
+    def get_popup_url(self):
+        return reverse('lizard_geodin_point', kwargs={'slug': self.slug})

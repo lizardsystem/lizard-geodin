@@ -1,0 +1,11 @@
+<style type="text/css">
+ul.list-no-bullets li {
+    list-style-type: none;
+}
+</style>
+
+<ul class="list-no-bullets">
+{% for point in view.points %}
+<li><a href="{{ point.get_popup_url }}">{{ point }}</a></li>
+{% endfor %}
+</ul>

@@ -153,3 +153,25 @@ class MeasurementPopupView(ViewContextMixin, TemplateView):
     @property
     def first_point(self):
         return self.measurement.points.all()[0]
+
+
+class PointListView(ViewContextMixin, TemplateView):
+    """Display a list of all points. Optionally provide point slugs as get parameters
+    """
+    template_name = 'lizard_geodin/point_list.html'
+
+    def points(self):
+        points = models.Point.objects.all()
+        slugs = self.request.GET.getlist('slug')
+        if slugs:
+            points = points.filter(slug__in=slugs)
+        return points
+
+
+class PointView(ViewContextMixin, TemplateView):
+    template_name = 'lizard_geodin/point.html'
+
+    @property
+    def point(self):
+        return get_object_or_404(models.Point,
+                                 slug=self.kwargs['slug'])
