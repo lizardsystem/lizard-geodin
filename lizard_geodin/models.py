@@ -335,52 +335,6 @@ class Measurement(models.Model):
         return ', '.join(self.data_type.metadata['fields'])
 
 
-class MeasurementConfiguration(models.Model):
-    # A measurementconfiguration has a list of fields it needs to
-    # show in the flot graph. Just fieldname/label mappings. This is already
-    # used in the timeseries() method of Point, which we can pass a
-    # measurement configuration (which doesn't happen yet in the code
-    # anywhere, though). If so, our field/label mapping is used instead of a
-    # automatically detected one.
-    #
-    # Also a filter should be added. For instance filter on
-    # 'Leverancier=companyname'. Filter points based on their metadata dict
-    # (where 'Leverancier' will end up in). And probably some caching to point
-    # at the correct points. Refresh this when you refresh the project.
-    #
-    # I'd suggest using the generated Measurement in in the interface UNLESS
-    # there are MeasurementConfigurations. Alternatively, always generate an
-    # empty MeasurementConfiguration when generating a Measurement (in
-    # Project's big update-myself-from-json method). In that case, we can look
-    # solely at MeasurementConfigurations instead of Measurements in the rest
-    # of the interface.
-
-    name = models.CharField(
-        _('name'),
-        max_length=50,
-        null=True,
-        blank=True)
-    slug = models.SlugField(
-        _('slug'),
-        help_text=_("Set automatically from the name"))
-    measurement = models.ForeignKey(
-        'Measurement',
-        null=True,
-        blank=True,
-        related_name='measurement_configurations')
-    metadata_filter = JSONField(
-        _('metadata filter'),
-        help_text=_("Filters points. The key/value(s) is looked up "
-                    "in the points' metadata."),
-        null=True,
-        blank=True)
-    flot_fields = JSONField(
-        _('flot fields'),
-        help_text=_("Fields used in flot. Key/value mapping: field/label."),
-        null=True,
-        blank=True)
-
-
 class Supplier(models.Model):
     """Supplier/company that provides the measurement data apparatus."""
     name = models.CharField(
@@ -391,6 +345,13 @@ class Supplier(models.Model):
     slug = models.SlugField(
         _('slug'),
         help_text=_("Often set automatically from the internal Geodin ID"))
+
+    def __unicode__(self):
+        return self.name or self.slug
+
+    class Meta:
+        verbose_name = _('supplier')
+        verbose_name_plural = _('suppliers')
 
 
 class Parameter(models.Model):
@@ -408,6 +369,13 @@ class Parameter(models.Model):
         max_length=100,
         null=True,
         blank=True)
+
+    def __unicode__(self):
+        return self.name or self.slug
+
+    class Meta:
+        verbose_name = _('parameter of a measurement')
+        verbose_name_plural = _('parameters of measurements')
 
 
 class Point(Common):
