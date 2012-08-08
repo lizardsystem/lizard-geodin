@@ -169,40 +169,26 @@ class Project(Common):
 
         """
         the_json = self.json_from_source_url()
-        already_handled = defaultdict(list)
-        hierarchy = []
+        # already_handled = defaultdict(list)
         for location_dict in the_json:
-            location_type = LocationType.create_or_update_from_json(
-                location_dict,
-                already_handled=already_handled)
-            level1 = {'name': location_type.name,
-                      'subitems': []}
+            location_type_name = location_dict['Name']
             for investigation_dict in location_dict['InvestigationTypes']:
-                investigation_type = InvestigationType.create_or_update_from_json(
-                    investigation_dict,
-                    already_handled=already_handled)
-                level2 = {'name': investigation_type.name,
-                          'subitems': []}
+                investigation_type_name = investigation_dict['Name']
                 for data_dict in investigation_dict['DataTypes']:
                     points = data_dict.pop('Points')
-                    data_type = DataType.create_or_update_from_json(
-                        data_dict,
-                        already_handled=already_handled)
-                    level3 = {'name': data_type.name,
-                              'measurement_url': None}
-                    level2['subitems'].append(level3)
+                    data_type_name = data_dict['Name']
                     if not points:
                         logger.debug("No measurements found.")
                         continue
                     name = ', '.join([self.name,
-                                      location_type.name,
-                                      investigation_type.name,
-                                      data_type.name])
+                                      location_type_name,
+                                      investigation_type_name,
+                                      data_type_name])
                     measurement, created = Measurement.objects.get_or_create(
                         project=self,
-                        location_type=location_type,
-                        investigation_type=investigation_type,
-                        data_type=data_type)
+                        location_type_name=location_type_name,
+                        investigation_type_name=investigation_type_name,
+                        data_type_name=data_type_name)
                     if created:
                         logger.debug("Created a new measurement: %s", name)
                     measurement.name = name
@@ -212,16 +198,6 @@ class Project(Common):
                         point.measurement = measurement
                         point.set_location_from_xy()
                         point.save()
-                    level3['measurement_url'] = measurement.get_absolute_url()
-                    level3['measurement_id'] = measurement.id
-                    # TODO: this'll be possibly multiple
-                    # MeasurementConfigurations instead.
-                level1['subitems'].append(level2)
-            hierarchy.append(level1)
-        if self.metadata is None:
-            self.metadata = {}
-        self.metadata['hierarchy'] = hierarchy
-        self.save()
 
 
 class ApiStartingPoint(Common):
