@@ -315,7 +315,6 @@ class ApiStartingPoint(Common):
                 json_item,
                 extra_kwargs={'api_starting_point': self},
                 already_handled=already_handled)
-
         loaded_projects_slugs = already_handled[Project]
         for unknown_project in Project.objects.exclude(
             slug__in=loaded_projects_slugs, api_starting_point=self):
@@ -358,6 +357,16 @@ class Measurement(models.Model):
         related_name='measurements')
     data_type = models.ForeignKey(
         'DataType',
+        null=True,
+        blank=True,
+        related_name='measurements')
+    supplier = models.ForeignKey(
+        'Supplier',
+        null=True,
+        blank=True,
+        related_name='measurements')
+    parameter = models.ForeignKey(
+        'Parameter',
         null=True,
         blank=True,
         related_name='measurements')
@@ -427,6 +436,34 @@ class MeasurementConfiguration(models.Model):
         null=True,
         blank=True)
 
+
+class Supplier(models.Model):
+    """Supplier/company that provides the measurement data apparatus."""
+    name = models.CharField(
+        _('name'),
+        max_length=100,
+        null=True,
+        blank=True)
+    slug = models.SlugField(
+        _('slug'),
+        help_text=_("Often set automatically from the internal Geodin ID"))
+
+
+class Parameter(models.Model):
+    """Parameter of a measurement, including unit."""
+    name = models.CharField(
+        _('name'),
+        max_length=100,
+        null=True,
+        blank=True)
+    slug = models.SlugField(
+        _('slug'),
+        help_text=_("Often set automatically from the internal Geodin ID"))
+    unit = models.CharField(
+        _('unit'),
+        max_length=100,
+        null=True,
+        blank=True)
 
 
 class Point(Common):
