@@ -333,9 +333,6 @@ class Measurement(models.Model):
         return reverse('lizard_geodin_measurement_popup_view',
                        kwargs={'measurement_id': self.id})
 
-    def fields(self):
-        return ', '.join(self.data_type.metadata['fields'])
-
     def workspace_acceptable(self):
         return WorkspaceAcceptable(
             name=self.name,
@@ -434,57 +431,31 @@ class Point(Common):
             result.update(self.metadata)
         return sorted(result.items())
 
-    def timeseries(self, measurement_configuration=None):
+    def timeseries(self):
         """Return last couple of days' timeseries data for flot.
 
-        Note that it doesn't have to be one single timeserie. You can have
-        (dx, dy, dz), for instance.
+        Note that it is by geodin's/anysense's design *one* single timeseries
 
-        What it returns is a list of dictionaries with 'label' and 'data' for
-        flot. You can add 'color' and so yourself afterwards.
-
-        If a measurement_configuration is provided, we use that to
-        filter/configure our output. For instance by not including all
-        columns.
+        What it returns is a one-item list of dictionaries with 'label' and
+        'data' for flot. You can add 'color' and so yourself afterwards.
 
         """
         the_json = self.json_from_source_url()
+        logger.debug("Got the json data from Geodin.")
         # Perhaps add caching, it seems to take quite some time.
-        lines = defaultdict(list)
-        result = []
         if not the_json:
             # Empty.
-            return result
-        if measurement_configuration is not None:
-            # We use the fieldname/label mapping from the configuration. This
-            # might mean we show less fields (only temperature and not both
-            # temperature and dx/dy/dz for instance). And the fields now have
-            # proper labels.
-            fields = measurement_configuration.flot_fields
-        else:
-            # Detect them from our first item.
-            # fields is a fieldname/label mapping.
-            first_one_fields = the_json[0].keys()
-            first_one_fields = [field for field in first_one_fields
-                                if not field.startswith('_')]
-            first_one_fields.remove('Id')
-            first_one_fields.remove('Date')
-            fields = {}
-            for field in first_one_fields:
-                label = field  # We don't have any other.
-                fields[field] = label
+            return []
 
+        line = []
         for timestep in the_json:
             date = dateutil.parser.parse(timestep.pop('Date'))
             timestamp_in_seconds = int(date.strftime("%s"))
             timestamp_in_ms = 1000 * timestamp_in_seconds
             # See http://people.iola.dk/olau/flot/examples/time.html
-            for field in fields:
-                lines[field].append((timestamp_in_ms, timestep[field]))
-        for field, data in lines.items():
-            flot_line = {'label': fields[field],
-                         'data': data}
-            result.append(flot_line)
+            line.append((timestamp_in_ms, timestep['Value']))
+        result = [{'label': self.measurement.parameter.name,
+                   'data': line}]
         return result
 
     def set_location_from_xy(self):

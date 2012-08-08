@@ -39,20 +39,36 @@
       {% endfor %}
     </ul>
 
-    <h2>{% trans "Measurements" %}</h2>
-    <p>
-      Textual debug information about measurements.
-    </p>
-    <ul>
-      {% for measurement in view.measurements %}
-        <li>
-          <a href="{{ measurement.get_absolute_url }}">
-            {{ measurement.name }}
-          </a>
-        </li>
-      {% endfor %}
-    </ul>
+    {% if user.is_superuser %}
+      <hr />
+      <h2>{% trans "Measurements" %}</h2>
+      <p>
+        Textual debug information about measurements.
+      </p>
+      <ul>
+        {% for measurement in view.measurements %}
+          <li>
+            <a href="{{ measurement.get_absolute_url }}">
+              {{ measurement.name }}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
 
+      <h2>{% trans "API starting points" %}</h2>
+      <p>
+        Textual debug information about API starting points.
+      </p>
+      <ul>
+        {% for api_starting_point in view.api_starting_points %}
+          <li>
+            <a href="{{ api_starting_point.source_url }}">
+              {{ api_starting_point.name }}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
 
   </div>
 {% endblock content %}

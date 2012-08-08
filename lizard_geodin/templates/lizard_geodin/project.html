@@ -15,4 +15,14 @@
     </ul>
   {% endfor %}
 
+  {% if user.is_superuser %}
+    <hr />
+    <p>
+      For debug purposes: the
+      <a href="{{ view.project.source_url }}">
+        API json output URL
+      </a>.
+    </p>
+  {% endif %}
+
 {% endblock sidebar %}

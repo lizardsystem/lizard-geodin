@@ -35,11 +35,14 @@ class ProjectsOverview(UiView):
 
     def suppliers(self):
         """Return all suppliers."""
-        return models.Supplier.objects.filter()
+        return models.Supplier.objects.all()
 
     def measurements(self):
         """Return all measurements."""
-        return models.Measurement.objects.filter()
+        return models.Measurement.objects.all()
+
+    def api_starting_points(self):
+        return models.ApiStartingPoint.objects.all()
 
     def show_activation_hint(self):
         """Return True if projects exist, but none are active."""
@@ -121,8 +124,8 @@ class SupplierView(AppView):
         return base + [_breadcrumb_element(self.supplier)]
 
 
-class MeasurementView(ProjectView):
-    """View for a measurement inside a project."""
+class MeasurementView(UiView):
+    """Debug view for a measurement."""
     template_name = 'lizard_geodin/measurement.html'
 
     @property
