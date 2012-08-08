@@ -456,6 +456,8 @@ class Point(Common):
             line.append((timestamp_in_ms, timestep['Value']))
         result = [{'label': self.measurement.parameter.name,
                    'data': line}]
+        # TODO: needs the unit from the parameter, really, too. This still
+        # needs to be imported, btw.
         return result
 
     def set_location_from_xy(self):
