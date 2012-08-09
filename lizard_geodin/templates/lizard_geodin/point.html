@@ -52,6 +52,13 @@
          data-flot-graph-data-url="{% url lizard_geodin_flot_data point_id=point.id %}">{{ point.slug }} Grafiek is aan het laden.
     </div>
     <input class="flot-graph-reload" type="button" value="Zoom uit" />
+<!--The popup thingy, works with jsload only. The graphs are broken half of the time. If they are broken the whole site will go down-->
+<!--a class="box-action" href="{{ point.get_popup_url }}" data-temp-id="point-popup-{{ point.id }}">groot</a>
+
+<div class="box-dialog" data-temp-id="point-popup-{{ point.id }}" data-title="{{ point }}">
+  <iframe src="{{ point.get_popup_url }}" frameborder="0">IFrame contents
+  </iframe>
+</div!-->
 {% endfor %}
 
 </body>
