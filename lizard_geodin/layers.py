@@ -1,16 +1,19 @@
 # Lots of copy/paste from lizard-riool, btw.  [reinout]
 # from __future__ import unicode_literals  # Mapnik dislikes this.
-import os
+import json
 import logging
+import os
 
 from django.conf import settings
 from django.contrib.gis import geos
+from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
 from lizard_map import coordinates
-from lizard_map.workspace import WorkspaceItemAdapter
 from lizard_map.mapnik_helper import add_datasource_point
-from lizard_map.models import WorkspaceItemError
 from lizard_map.models import ICON_ORIGINALS
+from lizard_map.models import WorkspaceItemError
 from lizard_map.symbol_manager import SymbolManager
+from lizard_map.workspace import WorkspaceItemAdapter
 import mapnik
 
 from lizard_geodin import models
@@ -155,19 +158,39 @@ class GeodinPoints(WorkspaceItemAdapter):
         minimal amount of information necessary to show it."""
 
         pnt = geos.Point(x, y, srid=900913)
-        points = (models.StoredGraph.objects.filter(rmb__id=self.id).
-                  filter(xy__distance_lte=(pnt, radius)).
-                  distance(pnt).
-                  order_by('distance'))
-
+        points = self.measurement.points.filter(
+            location__distance_lte=(pnt, radius)).distance(pnt).order_by('distance')
         if not points:
             return []
 
         point = points[0]
 
-        return [{
-                'name': ('%.0f%% verloren berging' %
-                         (point.flooded_percentage * 100,)),
-                'stored_graph_id': point.pk,
-                'distance': point.distance.m,
-                }]
+        return [{'name': point.name,
+                 'distance': point.distance.m,
+                 'workspace_item': self.workspace_item,
+                 'identifier': {'point_id': point.id},
+                 }]
+
+    # def location(self, point_id, layout=None):
+    #     """
+    #     returns location dict.
+
+    #     requires identifier_json
+    #     """
+    #     point = get_object_or_404(models.Point, pk=point_id)
+    #     identifier = {'point_id': point.id}
+    #     return {
+    #         'name': '%s' % point.name,
+    #         'workspace_item': self.workspace_item,
+    #         'identifier': identifier,
+    #         'google_coords': coordinates.wgs84_to_google(
+    #             point.location.x, point.location.y),
+    #         'object': point,
+    #         }
+
+    def html(self, identifiers=None, layout_options=None):
+        points = [get_object_or_404(models.Point, pk=identifier['point_id'])
+                  for identifier in identifiers]
+        return render_to_string(
+            'lizard_geodin/point_popup.html',
+            {'points': points})
