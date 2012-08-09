@@ -6,6 +6,6 @@ ul.list-no-bullets li {
 
 <ul class="list-no-bullets">
 {% for point in view.points %}
-<li><a href="{{ point.get_popup_url }}">{{ point }}</a></li>
+<li><a href="{{ point.get_popup_url }}">{{ point }} ({{ point.measurement.parameter }}, {{ point.measurement.supplier}}) </a></li>
 {% endfor %}
 </ul>

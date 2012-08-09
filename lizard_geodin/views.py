@@ -179,11 +179,26 @@ class PointListView(ViewContextMixin, TemplateView):
     """
     template_name = 'lizard_geodin/point_list.html'
 
+    def filter_request_points(self, points):
+        """Filter out items that are not selected in the filter pane.
+        """
+        filters = self.request.session['filter-measurements']
+        result = []
+        for point in points:
+            filter_key = 'Supplier::%d' % point.measurement.supplier.id
+            filter_key_param = 'Parameter::%d' % point.measurement.parameter.id
+            if ((filter_key not in filters or filters[filter_key] == 'true') and
+                (filter_key_param not in filters or filters[filter_key_param] == 'true')):
+                # This object is wanted.
+                result.append(point)
+        return result
+
     def points(self):
         points = models.Point.objects.all()
         slugs = self.request.GET.getlist('slug')
         if slugs:
             points = points.filter(slug__in=slugs)
+        points = self.filter_request_points(points)
         return points
 
 
