@@ -123,7 +123,7 @@ class Common(models.Model):
         """
         if not self.source_url:
             raise ValueError("We need a source_url to update ourselves from.")
-        response = requests.get(self.source_url)
+        response = requests.get(self.source_url, timeout=1.0)
         if response.json is None:
             msg = "No json found. HTTP status code was %s, text was \n%s"
             raise ValueError(msg % (response.status_code, response.text))
