@@ -213,3 +213,23 @@ class PointView(ViewContextMixin, TemplateView):
     def point(self):
         return get_object_or_404(models.Point,
                                  slug=self.kwargs['slug'])
+
+
+class MultiplePointsView(ViewContextMixin, TemplateView):
+    template_name = 'lizard_geodin/point.html'
+
+    @property
+    def width(self):
+        return self.request.GET.get('width', 500)
+
+    @property
+    def height(self):
+        return self.request.GET.get('height', 100)
+
+    @property
+    def points(self):
+        points = models.Point.objects.all()
+        slugs = self.request.GET.getlist('slug')
+        if slugs:
+            points = points.filter(slug__in=slugs)
+        return points[:10]  # max 10!

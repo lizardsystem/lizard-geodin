@@ -25,6 +25,7 @@
         <script type="text/javascript"
                 src="/static_media/jquery-flot/jquery.flot.axislabels.js"></script>
 
+{% if view.point %}
 <h3>{{ view.point }}</h3>
 
      <div style="width: 900px; height: 240px;"
@@ -42,5 +43,16 @@
         URL to flot graph data (testing)
         </a>.
     </p>
+{% endif %}
+
+{% for point in view.points %}
+<p>{{ point }}</p>
+     <div style="width: {{ view.width }}px; height: {{ view.height }}px;"
+         class="img-use-my-size flot-graph"
+         data-flot-graph-data-url="{% url lizard_geodin_flot_data point_id=point.id %}">{{ point.slug }} Grafiek is aan het laden.
+    </div>
+    <input class="flot-graph-reload" type="button" value="Zoom uit" />
+{% endfor %}
+
 </body>
   </html>

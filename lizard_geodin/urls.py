@@ -22,12 +22,17 @@ urlpatterns = patterns(
     url(r'^flot/(?P<point_id>[^/]+)/$',
         views.point_flot_data,
         name='lizard_geodin_flot_data'),
+
     url(r'^point/$',
         views.PointListView.as_view(),
         name='lizard_geodin_point_list'),
     url(r'^point/(?P<slug>[^/]+)/$',
         views.PointView.as_view(),
         name='lizard_geodin_point'),
+    url(r'^multiple-points/$',
+        views.MultiplePointsView.as_view(),
+        name='lizard_geodin_multiple_points'),
+
     url(r'^project/(?P<slug>[^/]+)/$',
         views.ProjectView.as_view(),
         name='lizard_geodin_project_view'),
