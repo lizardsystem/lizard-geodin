@@ -182,7 +182,11 @@ class PointListView(ViewContextMixin, TemplateView):
     def filter_request_points(self, points):
         """Filter out items that are not selected in the filter pane.
         """
-        filters = self.request.session['filter-measurements']
+        filters = {}
+        try:
+            filters = self.request.session['filter-measurements']
+        except:
+            pass
         result = []
         for point in points:
             filter_key = 'Supplier::%d' % point.measurement.supplier.id
