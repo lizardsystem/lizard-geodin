@@ -5,7 +5,11 @@ Changelog of lizard-geodin
 0.1 (unreleased)
 ----------------
 
-- Added MeasurementConfiguration including comments on how to use it.
+- Added caching for the values json.
+
+- Got the supplier/parameter filtering working.
+
+- Switched off, basically, the Geodin hierarcy as we don't really use it.
 
 - Added admin actions to reload the api startpoint and the projects.
 
