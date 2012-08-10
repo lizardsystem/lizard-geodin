@@ -53,6 +53,7 @@ class Common(models.Model):
     create_subitems = False
     auto_fill_metadata = False
     cache_json_from_api = False
+    json_request_timeout = 10
     # The common fields.
     name = models.CharField(
         _('name'),
@@ -137,7 +138,8 @@ class Common(models.Model):
                 logger.debug("Returning cached json result.")
                 return cache_result
         try:
-            response = requests.get(self.source_url, timeout=10)
+            response = requests.get(self.source_url,
+                                    timeout=self.json_request_timeout)
         except requests.exceptions.Timeout:
             if self.cache_json_from_api:
                 # Try and grab the fallback cache value, which can be up to an
@@ -170,6 +172,7 @@ class Common(models.Model):
 class Project(Common):
     """Geodin project, it is the starting point for the API.
     """
+    json_request_timeout = 30  # One of 'em takes 25 seconds...
     field_mapping = {'source_url': 'Url',
                      'name': 'Name'}
 
