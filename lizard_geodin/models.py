@@ -15,10 +15,8 @@ import dateutil.parser
 import requests
 
 ADAPTER_NAME = 'lizard_geodin_points'
-POINT_JSON_CACHE_TIMEOUT = 60 * 60  # One hour.
-# ^^^ This is to keep the graphs alive even if there are hickups on the Geodin
-# server. The one hour timeout is not intended as the desired actual data
-# timeout, a refresh script should refresh it beforehand.
+POINT_JSON_CACHE_TIMEOUT = 60  # In seconds
+FALLBACK_POINT_JSON_CACHE_TIMEOUT = 60 * 60  # One hour.
 
 logger = logging.getLogger(__name__)
 
@@ -131,18 +129,40 @@ class Common(models.Model):
         """
         if not self.source_url:
             raise ValueError("We need a source_url to update ourselves from.")
+        cache_key = self.source_url
+        fallback_cache_key = 'FALLBACK' + self.source_url
         if self.cache_json_from_api and from_cache_is_ok:
-            cache_result = cache.get(self.source_url)
+            cache_result = cache.get(cache_key)
             if cache_result is not None:
                 logger.debug("Returning cached json result.")
                 return cache_result
-        response = requests.get(self.source_url, timeout=10.0)
+        try:
+            response = requests.get(self.source_url, timeout=10)
+        except requests.exceptions.Timeout:
+            if self.cache_json_from_api:
+                # Try and grab the fallback cache value, which can be up to an
+                # hour old.
+                cache_result = cache.get(fallback_cache_key)
+                if cache_result is not None:
+                    logger.warn(
+                        "Timeout on %s; returning fallback cache value",
+                        self.source_url)
+                    return cache_result
+            raise
         if response.json is None:
             msg = "No json found. HTTP status code was %s, text was \n%s"
-            raise ValueError(msg % (response.status_code, response.text))
+            msg = msg % (response.status_code, response.text)
+            if self.cache_json_from_api:
+                cache_result = cache.get(fallback_cache_key)
+                if cache_result is not None:
+                    logger.warn(msg + " Returning fallback cache value")
+                    return cache_result
+            raise ValueError(msg)
         result = response.json
         if self.cache_json_from_api:
-            cache.set(self.source_url, result, POINT_JSON_CACHE_TIMEOUT)
+            cache.set(cache_key, result, POINT_JSON_CACHE_TIMEOUT)
+            cache.set(fallback_cache_key, result,
+                      FALLBACK_POINT_JSON_CACHE_TIMEOUT)
             logger.debug("Caching json result from API.")
         return result
 
