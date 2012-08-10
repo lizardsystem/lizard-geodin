@@ -501,6 +501,12 @@ class Point(Common):
         # needs to be imported, btw.
         return result
 
+    def last_value(self):
+        """Return last known value."""
+        the_json = self.json_from_source_url()
+        last_timestep = the_json[-1]
+        return last_timestep['Value']
+
     def set_location_from_xy(self):
         """x/y is assumed to be in RD."""
         self.location = GeosPoint(coordinates.rd_to_wgs84(self.x, self.y))

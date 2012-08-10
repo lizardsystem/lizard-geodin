@@ -68,7 +68,7 @@ class MeasurementAdmin(admin.ModelAdmin):
 
 
 class PointAdmin(admin.GeoModelAdmin):
-    pass
+    list_display = ('id', 'slug', 'name', 'measurement')
 
 
 admin.site.register(models.Project, ProjectAdmin)
