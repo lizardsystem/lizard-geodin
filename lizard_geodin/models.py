@@ -1,10 +1,10 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
 from __future__ import unicode_literals
-from collections import defaultdict
 import logging
 
 from django.contrib.gis.db import models
 from django.contrib.gis.geos import Point as GeosPoint
+from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
@@ -15,6 +15,10 @@ import dateutil.parser
 import requests
 
 ADAPTER_NAME = 'lizard_geodin_points'
+POINT_JSON_CACHE_TIMEOUT = 60 * 60  # One hour.
+# ^^^ This is to keep the graphs alive even if there are hickups on the Geodin
+# server. The one hour timeout is not intended as the desired actual data
+# timeout, a refresh script should refresh it beforehand.
 
 logger = logging.getLogger(__name__)
 
@@ -50,6 +54,7 @@ class Common(models.Model):
     subitems_mapping = {}
     create_subitems = False
     auto_fill_metadata = False
+    cache_json_from_api = False
     # The common fields.
     name = models.CharField(
         _('name'),
@@ -115,19 +120,31 @@ class Common(models.Model):
                         json_item, already_handled=already_handled)
         return obj
 
-    def json_from_source_url(self):
+    def json_from_source_url(self, from_cache_is_ok=True):
         """Return json from our source_url.
 
         Note: ``source_url`` is a convention, not every one of our subclasses
         has it. But having this method here is handy.
+
+        Set ``from_cache_is_ok`` to False if you want to refresh the cache.
+
         """
         if not self.source_url:
             raise ValueError("We need a source_url to update ourselves from.")
-        response = requests.get(self.source_url, timeout=1.0)
+        if self.cache_json_from_api and from_cache_is_ok:
+            cache_result = cache.get(self.source_url)
+            if cache_result is not None:
+                logger.debug("Returning cached json result.")
+                return cache_result
+        response = requests.get(self.source_url, timeout=10.0)
         if response.json is None:
             msg = "No json found. HTTP status code was %s, text was \n%s"
             raise ValueError(msg % (response.status_code, response.text))
-        return response.json
+        result = response.json
+        if self.cache_json_from_api:
+            cache.set(self.source_url, result, POINT_JSON_CACHE_TIMEOUT)
+            logger.debug("Caching json result from API.")
+        return result
 
 
 class Project(Common):
@@ -390,6 +407,7 @@ class Parameter(models.Model):
 class Point(Common):
     """Data point."""
     auto_fill_metadata = True
+    cache_json_from_api = True
     field_mapping = {'source_url': 'Url',
                      'name': 'Name',
                      'x': 'Xcoord',
