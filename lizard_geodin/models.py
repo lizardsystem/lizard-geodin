@@ -390,6 +390,7 @@ class Supplier(models.Model):
     slug = models.SlugField(
         _('slug'),
         help_text=_("Often set automatically from the internal Geodin ID"))
+    html_color = models.CharField(max_length=20, default="#CCCCCC")
 
     def __unicode__(self):
         return self.name or self.slug
