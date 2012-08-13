@@ -12,6 +12,17 @@
   <div class="textual-content">
     <h1>{{ view.page_title }}</h1>
 
+    <h2>{% trans "Suppliers" %}</h2>
+    <ul>
+      {% for supplier in view.suppliers %}
+        <li>
+          <a href="{{ supplier.get_absolute_url }}">
+            {{ supplier.name }}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+
     <h2>{% trans "Projects" %}</h2>
     <ul>
       {% for project in view.projects %}
@@ -27,17 +38,6 @@
         {% trans "There are projects, but none have been activated in the admin." %}
       </p>
     {% endif %}
-
-    <h2>{% trans "Suppliers" %}</h2>
-    <ul>
-      {% for supplier in view.suppliers %}
-        <li>
-          <a href="{{ supplier.get_absolute_url }}">
-            {{ supplier.name }}
-          </a>
-        </li>
-      {% endfor %}
-    </ul>
 
     {% if user.is_superuser %}
       <hr />
