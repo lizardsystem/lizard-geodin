@@ -214,6 +214,18 @@ class PointView(ViewContextMixin, TemplateView):
         return get_object_or_404(models.Point,
                                  slug=self.kwargs['slug'])
 
+    @property
+    def extra(self):
+        return self.request.GET.get('extra', 'False') == 'True'
+
+    @property
+    def width(self):
+        return self.request.GET.get('width', 900)
+
+    @property
+    def height(self):
+        return self.request.GET.get('height', 240)
+
 
 class MultiplePointsView(ViewContextMixin, TemplateView):
     template_name = 'lizard_geodin/point.html'
