@@ -26,7 +26,7 @@
 {% if view.point %}
 {% if view.extra %}<h3>{{ view.point }}</h3>{% endif %}
 
-     <div style="width: {{ view.width }}px; height: {{ view.height }}px;"
+    <div style="width: {{ view.width }}px; height: {{ view.height }}px;"
          class="img-use-my-size flot-graph"
          data-flot-graph-data-url="{% url lizard_geodin_flot_data point_id=view.point.id %}">Grafiek is aan het laden.
     </div>
@@ -44,16 +44,3 @@
     </p>
     {% endif %}
 {% endif %}
-
-{% for point in view.points %}
-<p>{{ point }}<!--The popup thingy, works with jsload only. -->
-<a class="box-action" href="#" data-temp-id="point-popup-{{ point.id }}">groot</a></p>
-
-    <iframe class="point" src="{% url lizard_geodin_point slug=point.slug %}?width={{ view.width }}&height={{ view.height }}" frameborder="0">IFrame contents</iframe>
-
-
-<div class="box-dialog" data-temp-id="point-popup-{{ point.id }}" data-title="{{ point }}">
-  <iframe class="box point" src="{% url lizard_geodin_point slug=point.slug %}?width=900&height=250" frameborder="0">IFrame contents</iframe>
-</div>
-{% endfor %}
-

@@ -228,7 +228,7 @@ class PointView(ViewContextMixin, TemplateView):
 
 
 class MultiplePointsView(ViewContextMixin, TemplateView):
-    template_name = 'lizard_geodin/point.html'
+    template_name = 'lizard_geodin/points.html'
 
     @property
     def width(self):
