@@ -226,6 +226,12 @@ class PointView(ViewContextMixin, TemplateView):
     def height(self):
         return self.request.GET.get('height', 240)
 
+    @property
+    def popup(self):
+        """Show zoom button?
+        """
+        return self.request.GET.get('popup', 'false') == 'true'
+
 
 class MultiplePointsView(ViewContextMixin, TemplateView):
     template_name = 'lizard_geodin/points.html'
