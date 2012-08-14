@@ -228,7 +228,7 @@ class Project(Common):
                     for point_dict in points:
                         # Get supplier.
                         supplier_name = point_dict.pop('Leverancier')
-                        supplier_slug = slugify(supplier_name)
+                        supplier_slug = slugify(supplier_name)[:50]
                         supplier, is_created = Supplier.objects.get_or_create(
                             slug=supplier_slug)
                         if is_created:
@@ -236,7 +236,7 @@ class Project(Common):
                             supplier.save()
                         # Get parameter.
                         parameter_name = point_dict.pop('Description')
-                        parameter_slug = slugify(parameter_name)
+                        parameter_slug = slugify(parameter_name)[:50]
                         parameter, is_created = Parameter.objects.get_or_create(
                             slug=parameter_slug)
                         if is_created:
@@ -509,8 +509,9 @@ class Point(Common):
         return last_timestep['Value']
 
     def set_location_from_xy(self):
-        """x/y is assumed to be in RD."""
-        self.location = GeosPoint(coordinates.rd_to_wgs84(self.x, self.y))
+        """x/y is assumed to be in WGS."""
+        # self.location = GeosPoint(coordinates.rd_to_wgs84(self.x, self.y))
+        self.location = GeosPoint(float(self.x), float(self.y))
 
     def get_popup_url(self):
         return reverse('lizard_geodin_point', kwargs={'slug': self.slug})
