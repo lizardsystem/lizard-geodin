@@ -228,7 +228,7 @@ class Project(Common):
                     for point_dict in points:
                         # Get supplier.
                         supplier_name = point_dict.pop('Leverancier')
-                        supplier_slug = slugify(supplier_name)
+                        supplier_slug = slugify(supplier_name)[:50]
                         supplier, is_created = Supplier.objects.get_or_create(
                             slug=supplier_slug)
                         if is_created:
@@ -236,7 +236,7 @@ class Project(Common):
                             supplier.save()
                         # Get parameter.
                         parameter_name = point_dict.pop('Description')
-                        parameter_slug = slugify(parameter_name)
+                        parameter_slug = slugify(parameter_name)[:50]
                         parameter, is_created = Parameter.objects.get_or_create(
                             slug=parameter_slug)
                         if is_created:
