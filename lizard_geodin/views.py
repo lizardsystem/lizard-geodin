@@ -251,3 +251,12 @@ class MultiplePointsView(ViewContextMixin, TemplateView):
         if slugs:
             points = points.filter(slug__in=slugs)
         return points[:10]  # max 10!
+
+
+class SidebarPointView(PointView):
+
+    height = 190
+    width = 220
+    popup = False
+    extra = False
+
