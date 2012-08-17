@@ -1,5 +1,6 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
 from __future__ import unicode_literals
+import datetime
 import logging
 
 from django.contrib.gis.db import models
@@ -473,7 +474,7 @@ class Point(Common):
             result.update(self.metadata)
         return sorted(result.items())
 
-    def timeseries(self):
+    def timeseries(self, one_day_only=False):
         """Return last couple of days' timeseries data for flot.
 
         Note that it is by geodin's/anysense's design *one* single timeseries
@@ -484,14 +485,18 @@ class Point(Common):
         """
         the_json = self.json_from_source_url()
         logger.debug("Got the json data from Geodin.")
-        # Perhaps add caching, it seems to take quite some time.
         if not the_json:
             # Empty.
             return []
 
         line = []
+        yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
         for timestep in the_json:
             date = dateutil.parser.parse(timestep.pop('Date'))
+            print date, yesterday
+            if one_day_only:
+                if date < yesterday:
+                    continue
             timestamp_in_seconds = int(date.strftime("%s"))
             timestamp_in_ms = 1000 * timestamp_in_seconds
             # See http://people.iola.dk/olau/flot/examples/time.html

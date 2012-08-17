@@ -152,8 +152,10 @@ class MeasurementView(UiView):
 
 
 def point_flot_data(request, point_id=None):
+    one_day_only = bool(request.GET.get('one_day_only'))
     point = get_object_or_404(models.Point, pk=int(point_id))
-    the_json = json.dumps({'data': point.timeseries()}, indent=2)
+    the_json = json.dumps({'data': point.timeseries(one_day_only=one_day_only)},
+                          indent=2)
     return HttpResponse(the_json, mimetype='application/json')
 
 
@@ -208,6 +210,7 @@ class PointListView(ViewContextMixin, TemplateView):
 
 class PointView(ViewContextMixin, TemplateView):
     template_name = 'lizard_geodin/point.html'
+    one_day_only = False
 
     @property
     def point(self):
@@ -233,6 +236,14 @@ class PointView(ViewContextMixin, TemplateView):
         return self.request.GET.get('popup', 'false') == 'true'
 
 
+class SidebarPointView(PointView):
+    one_day_only = True
+    height = 190
+    width = 220
+    popup = False
+    extra = False
+
+
 class MultiplePointsView(ViewContextMixin, TemplateView):
     template_name = 'lizard_geodin/points.html'
 
@@ -251,12 +262,3 @@ class MultiplePointsView(ViewContextMixin, TemplateView):
         if slugs:
             points = points.filter(slug__in=slugs)
         return points[:10]  # max 10!
-
-
-class SidebarPointView(PointView):
-
-    height = 190
-    width = 220
-    popup = False
-    extra = False
-
