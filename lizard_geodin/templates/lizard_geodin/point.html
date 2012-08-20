@@ -35,6 +35,7 @@
          data-flot-graph-data-url="{% url lizard_geodin_flot_data point_id=view.point.id %}{% if view.one_day_only %}?one_day_only=1{% endif %}">
       Grafiek is aan het laden.
     </div>
+    <div><b>{{ view.point.measurement.parameter.name }}</b></div>
     {% if view.popup %}
     <input class="flot-graph-reload" type="button" value="Zoom uit" />
     {% endif %}
