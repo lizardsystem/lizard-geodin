@@ -1,12 +1,12 @@
 <div>
   {% for point in points %}
+    <div><b>{{ point.measurement.parameter.name }}</b></div>
     <div style="width: 780px; height: 240px;"
          class="img-use-my-size flot-graph"
          data-flot-graph-data-url="{% url lizard_geodin_flot_data point_id=point.id %}">
       Grafiek is aan het laden. Als het langer dan 10 seconden duurt is het
          ophalen van de data misgegaan.
     </div>
-    <div><b>{{ point.measurement.parameter.name }}</b></div>
     <input class="flot-graph-reload" type="button" value="Zoom uit" />
   {% endfor %}
 </div>

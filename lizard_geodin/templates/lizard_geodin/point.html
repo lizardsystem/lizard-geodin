@@ -28,14 +28,13 @@
                 src="/static_media/jquery-flot/jquery.flot.axislabels.js"></script>
 
 {% if view.point %}
-{% if view.extra %}<h3>{{ view.point }}</h3>{% endif %}
 
+    <div><b>{{ view.point.measurement.parameter.name }}</b></div>
     <div style="width: {{ view.width }}px; height: {{ view.height }}px;"
          class="img-use-my-size flot-graph"
          data-flot-graph-data-url="{% url lizard_geodin_flot_data point_id=view.point.id %}{% if view.one_day_only %}?one_day_only=1{% endif %}">
       Grafiek is aan het laden.
     </div>
-    <div><b>{{ view.point.measurement.parameter.name }}</b></div>
     {% if view.popup %}
     <input class="flot-graph-reload" type="button" value="Zoom uit" />
     {% endif %}
