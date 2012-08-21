@@ -537,7 +537,7 @@ class Point(Common):
         try:
             return '%s (%s, %s)' % (
                 self.name or self.slug,
-                self.measurement.data_type_name, self.measurement.supplier)
+                self.measurement.supplier)
         except:
             return self.name or self.slug
 
