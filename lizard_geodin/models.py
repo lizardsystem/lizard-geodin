@@ -499,13 +499,15 @@ class Point(Common):
         for timestep in the_json:
             date = timestep.pop('Date')
             if not '+' in date:
-                date = date  + "+03:00"
+                date = date  + "+02:00"
             date = dateutil.parser.parse(date)
             # ^^^ Add TZ offset to correct the timezone differences.
             if one_day_only:
                 if date < yesterday:
                     continue
             timestamp_in_seconds = int(date.strftime("%s"))
+            # Weird offset to fix the time in the graphs. The horror.
+            timestamp_in_seconds += 3600
             timestamp_in_ms = 1000 * timestamp_in_seconds
             # See http://people.iola.dk/olau/flot/examples/time.html
             line.append((timestamp_in_ms, timestep['Value']))
