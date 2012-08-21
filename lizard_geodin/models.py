@@ -512,7 +512,7 @@ class Point(Common):
 
     def last_value(self):
         """Return last known value."""
-        if len(self.metadata) == 2:
+        if (self.metadata is not None) and (len(self.metadata) == 2):
             # Date and a second key.
             keys = [key for key in self.metadata.keys()
                    if key != 'Date']
