@@ -464,6 +464,7 @@ class Point(Common):
     objects = models.GeoManager()
 
     class Meta:
+        ordering = ('name', 'slug', )
         verbose_name = _('point with data')
         verbose_name_plural = _('points with data')
 
