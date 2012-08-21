@@ -532,3 +532,12 @@ class Point(Common):
 
     def get_popup_url(self):
         return reverse('lizard_geodin_point', kwargs={'slug': self.slug})
+
+    def __unicode__(self):
+        try:
+            return '%s (%s, %s)' % (
+                self.name or self.slug,
+                self.measurement.data_type_name, self.measurement.supplier)
+        except:
+            return self.name or self.slug
+
