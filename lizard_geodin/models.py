@@ -535,9 +535,8 @@ class Point(Common):
 
     def __unicode__(self):
         try:
-            return '%s (%s, %s)' % (
-                self.name or self.slug,
-                self.measurement.supplier)
+            return '%s (%s)' % (
+                self.name, self.slug)
         except:
             return self.name or self.slug
 
