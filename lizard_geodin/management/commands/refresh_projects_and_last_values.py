@@ -23,4 +23,4 @@ of points.
                 logger.info("Skipping inactive project: %s", project)
                 continue
             logger.info("Refreshing %s.", project)
-            project.load_from_geodin()
+            project.load_from_geodin(from_cache_is_ok=False)

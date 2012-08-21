@@ -10,13 +10,12 @@ from django.core.urlresolvers import reverse
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 from jsonfield import JSONField
-from lizard_map import coordinates
 from lizard_map.lizard_widgets import WorkspaceAcceptable
 import dateutil.parser
 import requests
 
 ADAPTER_NAME = 'lizard_geodin_points'
-POINT_JSON_CACHE_TIMEOUT = 60  # In seconds
+POINT_JSON_CACHE_TIMEOUT = 120  # In seconds
 FALLBACK_POINT_JSON_CACHE_TIMEOUT = 60 * 60  # One hour.
 
 logger = logging.getLogger(__name__)
@@ -203,7 +202,7 @@ class Project(Common):
         return reverse('lizard_geodin_project_view',
                        kwargs={'slug': self.slug})
 
-    def load_from_geodin(self):
+    def load_from_geodin(self, from_cache_is_ok=True):
         """Load our data from the Geodin API.
 
         What we receive is a list of location types. In the end, we get
@@ -213,7 +212,8 @@ class Project(Common):
         ``views.py``.
 
         """
-        the_json = self.json_from_source_url()
+        the_json = self.json_from_source_url(
+            from_cache_is_ok=from_cache_is_ok)
         # already_handled = defaultdict(list)
         for location_dict in the_json:
             location_type_name = location_dict['Name']
