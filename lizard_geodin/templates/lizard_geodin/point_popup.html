@@ -1,6 +1,6 @@
 <div>
   {% for point in points %}
-    <div><b>{{ point.measurement.parameter.name }}</b></div>
+    <div><b>{{ point.name }} ({{ point.slug }}) {{ point.measurement.parameter.name }}</b></div>
     <div style="width: 780px; height: 240px;"
          class="img-use-my-size flot-graph"
          data-flot-graph-data-url="{% url lizard_geodin_flot_data point_id=point.id %}">
