@@ -515,8 +515,10 @@ class Point(Common):
 
     def set_location_from_xy(self):
         """x/y is assumed to be in WGS."""
-        # self.location = GeosPoint(coordinates.rd_to_wgs84(self.x, self.y))
-        self.location = GeosPoint(float(self.x), float(self.y))
+        if self.x and self.y:
+            self.location = GeosPoint(float(self.x), float(self.y))
+        else:
+            logger.warn("Point %s has no x/y: %s %s", self, self.x, self.y)
 
     def get_popup_url(self):
         return reverse('lizard_geodin_point', kwargs={'slug': self.slug})
