@@ -512,6 +512,15 @@ class Point(Common):
 
     def last_value(self):
         """Return last known value."""
+        if len(self.metadata) == 2:
+            # Date and a second key.
+            keys = [key for key in self.metadata.keys()
+                   if key != 'Date']
+            if len(keys) == 1:
+                # Yep, we've got only one.
+                last_value_key = keys[0]
+                return self.metadata[last_value_key]
+        # Fallback: grab the json.
         the_json = self.json_from_source_url()
         last_timestep = the_json[-1]
         return last_timestep['Value']
