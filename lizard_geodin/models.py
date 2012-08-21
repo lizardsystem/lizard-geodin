@@ -499,7 +499,7 @@ class Point(Common):
         for timestep in the_json:
             date = timestep.pop('Date')
             if not '+' in date:
-                date = date  + "+01:00"
+                date = date  + "+03:00"
             date = dateutil.parser.parse(date)
             # ^^^ Add TZ offset to correct the timezone differences.
             if one_day_only:
