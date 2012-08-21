@@ -22,5 +22,5 @@ of points.
             if not project.active:
                 logger.info("Skipping inactive project: %s", project)
                 continue
-            logger.info("Refreshing %s.", project)
+            print("Refreshing {project}.".format(project=project))
             project.load_from_geodin(from_cache_is_ok=False)
