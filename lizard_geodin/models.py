@@ -497,8 +497,8 @@ class Point(Common):
         line = []
         yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
         for timestep in the_json:
-            date = dateutil.parser.parse(timestep.pop('Date'))
-            print date, yesterday
+            date = dateutil.parser.parse(timestep.pop('Date') + "+02:00")
+            # ^^^ Add TZ offset to correct the timezone differences.
             if one_day_only:
                 if date < yesterday:
                     continue
