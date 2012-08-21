@@ -29,7 +29,7 @@
 
 {% if view.point %}
 
-    <div><b>{{ view.point.measurement.parameter.name }}</b></div>
+    <div><b>{{ view.point.measurement.parameter.name }} ({{ view.point.measurement.parameer.unit }}) - {{ view.point.measurement.supplier }}</b></div>
     <div style="width: {{ view.width }}px; height: {{ view.height }}px;"
          class="img-use-my-size flot-graph"
          data-flot-graph-data-url="{% url lizard_geodin_flot_data point_id=view.point.id %}{% if view.one_day_only %}?one_day_only=1{% endif %}">
