@@ -107,8 +107,9 @@ class Common(models.Model):
         kwargs = {'slug': slug}
         kwargs.update(extra_kwargs)
         obj, is_created = cls.objects.get_or_create(**kwargs)
+        if is_created:
+            logger.info("Created %r.", obj)
         obj.update_from_json(the_json)
-        logger.debug("Created %r.", obj)
         if already_handled is not None:
             already_handled[cls].append(obj.slug)
         if cls.create_subitems:
