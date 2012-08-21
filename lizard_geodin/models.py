@@ -264,10 +264,13 @@ class Project(Common):
                             logger.debug("Reusing existing measurement: %s",
                                          measurement_name)
 
-                        point = Point.create_or_update_from_json(point_dict)
-                        point.measurement = measurement
-                        point.set_location_from_xy()
-                        point.save()
+                        try:
+                            point = Point.create_or_update_from_json(point_dict)
+                            point.measurement = measurement
+                            point.set_location_from_xy()
+                            point.save()
+                        except ValueError:
+                            logger.warn("Point has no x/y: %s", point_dict)
 
 
 class ApiStartingPoint(Common):
@@ -515,10 +518,7 @@ class Point(Common):
 
     def set_location_from_xy(self):
         """x/y is assumed to be in WGS."""
-        if self.x and self.y:
-            self.location = GeosPoint(float(self.x), float(self.y))
-        else:
-            logger.warn("Point %s has no x/y: %s %s", self, self.x, self.y)
+        self.location = GeosPoint(float(self.x), float(self.y))
 
     def get_popup_url(self):
         return reverse('lizard_geodin_point', kwargs={'slug': self.slug})
