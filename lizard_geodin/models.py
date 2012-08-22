@@ -107,8 +107,9 @@ class Common(models.Model):
         kwargs = {'slug': slug}
         kwargs.update(extra_kwargs)
         obj, is_created = cls.objects.get_or_create(**kwargs)
+        if is_created:
+            logger.info("Created %r.", obj)
         obj.update_from_json(the_json)
-        logger.debug("Created %r.", obj)
         if already_handled is not None:
             already_handled[cls].append(obj.slug)
         if cls.create_subitems:
@@ -494,14 +495,22 @@ class Point(Common):
             return []
 
         line = []
-        yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
+        if one_day_only:
+            cutoff_date = datetime.datetime.now() - datetime.timedelta(days=1)
+        else:
+            # Just one week.
+            cutoff_date = datetime.datetime.now() - datetime.timedelta(days=7)
         for timestep in the_json:
-            date = dateutil.parser.parse(timestep.pop('Date'))
-            print date, yesterday
-            if one_day_only:
-                if date < yesterday:
-                    continue
+            date = timestep.pop('Date')
+            if not '+' in date:
+                date = date  + "+02:00"
+            date = dateutil.parser.parse(date)
+            # ^^^ Add TZ offset to correct the timezone differences.
+            if date < cutoff_date:
+                continue
             timestamp_in_seconds = int(date.strftime("%s"))
+            # Weird offset to fix the time in the graphs. The horror.
+            timestamp_in_seconds += 3600
             timestamp_in_ms = 1000 * timestamp_in_seconds
             # See http://people.iola.dk/olau/flot/examples/time.html
             line.append((timestamp_in_ms, timestep['Value']))
