@@ -69,8 +69,7 @@ class GeodinPoints(WorkspaceItemAdapter):
             os.path.join(settings.MEDIA_ROOT, 'generated_icons'))
         icon = ICON_STYLE['icon']
         mask = ICON_STYLE['mask']
-        # override_color = self.measurement.supplier.html_color
-        override_color = False
+        override_color = self.measurement.supplier.html_color
         if override_color:
             override_color = override_color.lstrip('#')
             color = html_to_mapnik(override_color)
