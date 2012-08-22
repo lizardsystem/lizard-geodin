@@ -71,9 +71,14 @@ class PointAdmin(admin.GeoModelAdmin):
     list_display = ('id', 'slug', 'name', 'measurement')
 
 
+class SupplierAdmin(admin.GeoModelAdmin):
+    list_display = ('slug', 'name', 'html_color')
+    list_editable = ('html_color', )
+
+
 admin.site.register(models.Project, ProjectAdmin)
 admin.site.register(models.Measurement, MeasurementAdmin)
 admin.site.register(models.ApiStartingPoint, ApiStartingPointAdmin)
 admin.site.register(models.Point, PointAdmin)
-admin.site.register(models.Supplier)
+admin.site.register(models.Supplier, SupplierAdmin)
 admin.site.register(models.Parameter)
