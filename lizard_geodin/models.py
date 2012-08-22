@@ -512,8 +512,8 @@ class Point(Common):
             cutoff_date = now - datetime.timedelta(days=7)
         for timestep in the_json:
             date = timestep.pop('Date')
-            if not '+' in date:
-                date = date  + "+02:00"
+            if not 'Z' in date:
+                date = date  + "Z"  # Assumption: we're in UTC.
             date = dateutil.parser.parse(date)
             # ^^^ Add TZ offset to correct the timezone differences.
             if date < cutoff_date:
