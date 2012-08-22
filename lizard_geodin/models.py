@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 def timestamp_in_ms(date):
     # See http://people.iola.dk/olau/flot/examples/time.html
-    date += datetime.timedelta(hours=4)  # Make it look good for flot.
+    date -= date.utcoffset()  # Make it look good for flot.
     timestamp_in_seconds = int(date.strftime("%s"))
     return 1000 * timestamp_in_seconds
 
