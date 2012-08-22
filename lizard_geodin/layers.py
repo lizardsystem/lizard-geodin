@@ -32,7 +32,7 @@ PARAMS = {
 ICON_STYLE = {'icon': 'meetpuntPeil.png',
               'mask': ('meetpuntPeil_mask.png', ),
               'color': (0, 0, 1, 0)}
-ICON_SIZE = (10, 10)
+ICON_SIZE = (10, 10)  # Normally they're 16x16.
 logger = logging.getLogger(__name__)
 
 
@@ -169,17 +169,18 @@ class GeodinPoints(WorkspaceItemAdapter):
         pnt = geos.Point(x, y, srid=900913)
         points = self.measurement.points.filter(
             location__distance_lte=(pnt, radius)).distance(pnt).order_by(
-            'distance')
+            'distance').limit(5)
         if not points:
             return []
 
-        point = points[0]
-
-        return [{'name': point.name,
-                 'distance': point.distance.m,
-                 'workspace_item': self.workspace_item,
-                 'identifier': {'point_id': point.id},
-                 }]
+        result = []
+        for point in points:
+            result.append({'name': point.name,
+                           'distance': point.distance.m,
+                           'workspace_item': self.workspace_item,
+                           'identifier': {'point_id': point.id},
+                           })
+        return result
 
     # def location(self, point_id, layout=None):
     #     """
