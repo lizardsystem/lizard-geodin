@@ -495,16 +495,19 @@ class Point(Common):
             return []
 
         line = []
-        yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
+        if one_day_only:
+            cutoff_date = datetime.datetime.now() - datetime.timedelta(days=1)
+        else:
+            # Just one week.
+            cutoff_date = datetime.datetime.now() - datetime.timedelta(days=7)
         for timestep in the_json:
             date = timestep.pop('Date')
             if not '+' in date:
                 date = date  + "+02:00"
             date = dateutil.parser.parse(date)
             # ^^^ Add TZ offset to correct the timezone differences.
-            if one_day_only:
-                if date < yesterday:
-                    continue
+            if date < cutoff_date:
+                continue
             timestamp_in_seconds = int(date.strftime("%s"))
             # Weird offset to fix the time in the graphs. The horror.
             timestamp_in_seconds += 3600
