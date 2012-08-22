@@ -1,6 +1,7 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
 from __future__ import unicode_literals
 import datetime
+import time
 import logging
 
 from django.contrib.gis.db import models
@@ -495,11 +496,12 @@ class Point(Common):
             return []
 
         line = []
+        now = datetime.datetime.now(tz=time.timezone)
         if one_day_only:
-            cutoff_date = datetime.datetime.now() - datetime.timedelta(days=1)
+            cutoff_date = now - datetime.timedelta(days=1)
         else:
             # Just one week.
-            cutoff_date = datetime.datetime.now() - datetime.timedelta(days=7)
+            cutoff_date = now - datetime.timedelta(days=7)
         for timestep in the_json:
             date = timestep.pop('Date')
             if not '+' in date:
