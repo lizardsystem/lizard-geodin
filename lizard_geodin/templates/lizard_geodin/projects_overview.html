@@ -51,6 +51,9 @@
             <a href="{{ measurement.get_absolute_url }}">
               {{ measurement.name }}
             </a>
+            {% if not measurement.points.exists %}
+              <span class="btn btn-warning">Warning: no points</span>
+            {% endif %}
           </li>
         {% endfor %}
       </ul>

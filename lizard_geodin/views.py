@@ -148,7 +148,8 @@ class MeasurementView(UiView):
 
     @property
     def first_point(self):
-        return self.measurement.points.all()[0]
+        if self.measurement.points.exists():
+            return self.measurement.points.all()[0]
 
 
 def point_flot_data(request, point_id=None):

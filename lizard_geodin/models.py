@@ -483,7 +483,7 @@ class Point(Common):
     def timeseries(self, one_day_only=False):
         """Return last couple of days' timeseries data for flot.
 
-        Note that it is by geodin's/anysense's design *one* single timeseries
+        Note that it is by geodin's/anysense's design *one* single timeseries.
 
         What it returns is a one-item list of dictionaries with 'label' and
         'data' for flot. You can add 'color' and so yourself afterwards.
