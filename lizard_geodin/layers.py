@@ -32,7 +32,7 @@ PARAMS = {
 ICON_STYLE = {'icon': 'meetpuntPeil.png',
               'mask': ('meetpuntPeil_mask.png', ),
               'color': (0, 0, 1, 0)}
-
+ICON_SIZE = (6, 6)
 logger = logging.getLogger(__name__)
 
 
@@ -79,7 +79,7 @@ class GeodinPoints(WorkspaceItemAdapter):
         else:
             color = ICON_STYLE['color']
         output_filename = symbol_manager.get_symbol_transformed(
-            icon, mask=mask, color=color, icon=icon)
+            icon, mask=mask, color=color, icon=icon, size=ICON_SIZE)
         output_filename_abs = os.path.join(
             settings.MEDIA_ROOT, 'generated_icons', output_filename)
         # use filename in mapnik pointsymbolizer
