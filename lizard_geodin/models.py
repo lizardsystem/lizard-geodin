@@ -4,6 +4,7 @@ import datetime
 import time
 import logging
 
+import pytz
 from django.contrib.gis.db import models
 from django.contrib.gis.geos import Point as GeosPoint
 from django.core.cache import cache
@@ -496,7 +497,7 @@ class Point(Common):
             return []
 
         line = []
-        now = datetime.datetime.now(tz=time.timezone)
+        now = datetime.datetime.now(tz=pytz.timezone('EST'))
         if one_day_only:
             cutoff_date = now - datetime.timedelta(days=1)
         else:
