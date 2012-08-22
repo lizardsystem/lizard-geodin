@@ -33,7 +33,7 @@
     <div style="width: {{ view.width }}px; height: {{ view.height }}px;"
          class="img-use-my-size flot-graph"
          data-min="{{ view.start_date }}"
-         data-max="{{ view.start_date }}"
+         data-max="{{ view.end_date }}"
          data-flot-graph-data-url="{% url lizard_geodin_flot_data point_id=view.point.id %}{% if view.one_day_only %}?one_day_only=1{% endif %}">
       Grafiek is aan het laden.
     </div>
