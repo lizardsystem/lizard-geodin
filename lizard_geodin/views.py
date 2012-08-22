@@ -1,5 +1,6 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
 from __future__ import unicode_literals
+import datetime
 from collections import defaultdict
 import json
 
@@ -8,6 +9,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
 from django.views.generic.base import TemplateView
+import pytz
 
 from lizard_ui.layout import Action
 from lizard_ui.views import UiView
@@ -212,6 +214,32 @@ class PointListView(ViewContextMixin, TemplateView):
 class PointView(ViewContextMixin, TemplateView):
     template_name = 'lizard_geodin/point.html'
     one_day_only = False
+
+    @property
+    def now(self):
+        return datetime.datetime.now(tz=pytz.timezone('EST'))
+
+    @property
+    def start_date(self):
+        # Copy/paste from models...
+        if self.one_day_only:
+            cutoff_date = self.now - datetime.timedelta(days=1)
+        else:
+            # Just one week.
+            cutoff_date = self.now - datetime.timedelta(days=7)
+        timestamp_in_seconds = int(cutoff_date.strftime("%s"))
+        # Weird offset to fix the time in the graphs. The horror.
+        # timestamp_in_seconds += 3600
+        timestamp_in_ms = 1000 * timestamp_in_seconds
+        return timestamp_in_ms
+
+    @property
+    def end_date(self):
+        timestamp_in_seconds = int(self.now.strftime("%s"))
+        # Weird offset to fix the time in the graphs. The horror.
+        # timestamp_in_seconds += 3600
+        timestamp_in_ms = 1000 * timestamp_in_seconds
+        return timestamp_in_ms
 
     @property
     def point(self):
