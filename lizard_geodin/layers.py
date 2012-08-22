@@ -1,6 +1,5 @@
 # Lots of copy/paste from lizard-riool, btw.  [reinout]
 # from __future__ import unicode_literals  # Mapnik dislikes this.
-import json
 import logging
 import os
 
@@ -17,7 +16,6 @@ from lizard_map.workspace import WorkspaceItemAdapter
 import mapnik
 
 from lizard_geodin import models
-
 
 
 EPSILON = 0.0001
@@ -69,8 +67,16 @@ class GeodinPoints(WorkspaceItemAdapter):
         symbol_manager = SymbolManager(
             ICON_ORIGINALS,
             os.path.join(settings.MEDIA_ROOT, 'generated_icons'))
+        icon = ICON_STYLE['icon']
+        mask = ICON_STYLE['mask']
+        override_color = self.measurement.supplier.html_color
+        if override_color:
+            override_color = override_color.lstrip('#')
+            color = html_to_mapnik(override_color)
+        else:
+            color = ICON_STYLE['color']
         output_filename = symbol_manager.get_symbol_transformed(
-            ICON_STYLE['icon'], **ICON_STYLE)
+            icon, mask=mask, color=color)
         output_filename_abs = os.path.join(
             settings.MEDIA_ROOT, 'generated_icons', output_filename)
         # use filename in mapnik pointsymbolizer
@@ -159,7 +165,8 @@ class GeodinPoints(WorkspaceItemAdapter):
 
         pnt = geos.Point(x, y, srid=900913)
         points = self.measurement.points.filter(
-            location__distance_lte=(pnt, radius)).distance(pnt).order_by('distance')
+            location__distance_lte=(pnt, radius)).distance(pnt).order_by(
+            'distance')
         if not points:
             return []
 
