@@ -76,7 +76,7 @@ class GeodinPoints(WorkspaceItemAdapter):
         else:
             color = ICON_STYLE['color']
         output_filename = symbol_manager.get_symbol_transformed(
-            icon, mask=mask, color=color)
+            icon, mask=mask, color=color, icon=icon)
         output_filename_abs = os.path.join(
             settings.MEDIA_ROOT, 'generated_icons', output_filename)
         # use filename in mapnik pointsymbolizer
