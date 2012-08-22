@@ -26,7 +26,7 @@ def timestamp_in_ms(date):
     # See http://people.iola.dk/olau/flot/examples/time.html
     # date += date.utcoffset()  # Make it look good for flot.
     timestamp_in_seconds = int(date.strftime("%s"))
-    timestamp_in_seconds += 7200  # Make it look good for flot.
+    timestamp_in_seconds += 3 * 3600  # Make it look good for flot.
     return 1000 * timestamp_in_seconds
 
 
