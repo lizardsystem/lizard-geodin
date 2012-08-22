@@ -169,7 +169,7 @@ class GeodinPoints(WorkspaceItemAdapter):
         pnt = geos.Point(x, y, srid=900913)
         points = self.measurement.points.filter(
             location__distance_lte=(pnt, radius)).distance(pnt).order_by(
-            'distance').limit(5)
+            'distance')[:5]
         if not points:
             return []
 
