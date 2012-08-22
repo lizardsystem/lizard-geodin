@@ -22,6 +22,14 @@ FALLBACK_POINT_JSON_CACHE_TIMEOUT = 60 * 60  # One hour.
 logger = logging.getLogger(__name__)
 
 
+def timestamp_in_ms(date, offset=0):
+    # See http://people.iola.dk/olau/flot/examples/time.html
+    timestamp_in_seconds = int(date.strftime("%s"))
+    # Weird offset to fix the time in the graphs. The horror.
+    timestamp_in_seconds += offset
+    return 1000 * timestamp_in_seconds
+
+
 class Common(models.Model):
     """Abstract base class for the Geodin models.
 
@@ -496,7 +504,7 @@ class Point(Common):
             return []
 
         line = []
-        now = datetime.datetime.now(tz=pytz.timezone('EST'))
+        now = datetime.datetime.now(tz=pytz.timezone('Europe/Amsterdam'))
         if one_day_only:
             cutoff_date = now - datetime.timedelta(days=1)
         else:
@@ -510,14 +518,11 @@ class Point(Common):
             # ^^^ Add TZ offset to correct the timezone differences.
             if date < cutoff_date:
                 continue
-            timestamp_in_seconds = int(date.strftime("%s"))
-            # Weird offset to fix the time in the graphs. The horror.
-            timestamp_in_seconds += 3600
-            timestamp_in_ms = 1000 * timestamp_in_seconds
-            # See http://people.iola.dk/olau/flot/examples/time.html
-            line.append((timestamp_in_ms, timestep['Value']))
+            line.append((timestamp_in_ms(date, offset=3600), timestep['Value']))
         result = [{'label': self.measurement.parameter.name,
-                   'data': line}]
+                   'data': line,
+                   'min': timestamp_in_ms(cutoff_date),
+                   'max': timestamp_in_ms(now)}]
         # TODO: needs the unit from the parameter, really, too. This still
         # needs to be imported, btw.
         return result
