@@ -72,7 +72,10 @@ class GeodinPoints(WorkspaceItemAdapter):
         override_color = self.measurement.supplier.html_color
         if override_color:
             override_color = override_color.lstrip('#')
-            color = html_to_mapnik(override_color)
+            try:
+                color = html_to_mapnik(override_color)
+            except ValueError:
+                color = ICON_STYLE['color']
         else:
             color = ICON_STYLE['color']
         output_filename = symbol_manager.get_symbol_transformed(
