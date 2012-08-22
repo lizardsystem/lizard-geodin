@@ -1,3 +1,6 @@
+{% extends 'lizard_geodin/iframe_base.html' %}
+
+{% block main-area %}
 <style type="text/css">
 ul.list-no-bullets li {
     list-style-type: none;
@@ -9,3 +12,4 @@ ul.list-no-bullets li {
 <li><a href="{{ point.get_popup_url }}?extra=True">{{ point }} ({{ point.measurement.parameter }}, {{ point.measurement.supplier}}) </a></li>
 {% endfor %}
 </ul>
+{% endblock %}
