@@ -32,7 +32,7 @@ PARAMS = {
 ICON_STYLE = {'icon': 'meetpuntPeil.png',
               'mask': ('meetpuntPeil_mask.png', ),
               'color': (0, 0, 1, 0)}
-ICON_SIZE = (6, 6)
+ICON_SIZE = (10, 10)
 logger = logging.getLogger(__name__)
 
 
