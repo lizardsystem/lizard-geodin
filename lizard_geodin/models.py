@@ -22,11 +22,10 @@ FALLBACK_POINT_JSON_CACHE_TIMEOUT = 60 * 60  # One hour.
 logger = logging.getLogger(__name__)
 
 
-def timestamp_in_ms(date, offset=0):
+def timestamp_in_ms(date):
     # See http://people.iola.dk/olau/flot/examples/time.html
+    date += date.utcoffset()  # Make it look good for flot.
     timestamp_in_seconds = int(date.strftime("%s"))
-    # Weird offset to fix the time in the graphs. The horror.
-    timestamp_in_seconds += offset
     return 1000 * timestamp_in_seconds
 
 
@@ -518,7 +517,7 @@ class Point(Common):
             # ^^^ Add TZ offset to correct the timezone differences.
             if date < cutoff_date:
                 continue
-            line.append((timestamp_in_ms(date, offset=3600), timestep['Value']))
+            line.append((timestamp_in_ms(date), timestep['Value']))
         result = [{'label': self.measurement.parameter.name,
                    'data': line,
                    'min': timestamp_in_ms(cutoff_date),
