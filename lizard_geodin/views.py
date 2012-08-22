@@ -217,7 +217,7 @@ class PointView(ViewContextMixin, TemplateView):
 
     @property
     def now(self):
-        return datetime.datetime.now(tz=pytz.timezone('EST'))
+        return datetime.datetime.now(tz=pytz.timezone('Europe/Amsterdam'))
 
     @property
     def start_date(self):
