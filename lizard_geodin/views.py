@@ -159,7 +159,7 @@ def point_flot_data(request, point_id=None):
     point = get_object_or_404(models.Point, pk=int(point_id))
     data = point.timeseries(one_day_only=one_day_only)
     result = {'data': data}
-    if 'max' in data:
+    if data and 'max' in data[0]:
         result['max'] = data['max']
         result['min'] = data['min']
     the_json = json.dumps(result,
