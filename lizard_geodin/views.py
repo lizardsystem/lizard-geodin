@@ -160,8 +160,8 @@ def point_flot_data(request, point_id=None):
     data = point.timeseries(one_day_only=one_day_only)
     result = {'data': data}
     if data and 'max' in data[0]:
-        result['max'] = data['max']
-        result['min'] = data['min']
+        result['max'] = data[0]['max']
+        result['min'] = data[0]['min']
     the_json = json.dumps(result,
                           indent=2)
     return HttpResponse(the_json, mimetype='application/json')
