@@ -157,7 +157,12 @@ class MeasurementView(UiView):
 def point_flot_data(request, point_id=None):
     one_day_only = bool(request.GET.get('one_day_only'))
     point = get_object_or_404(models.Point, pk=int(point_id))
-    the_json = json.dumps({'data': point.timeseries(one_day_only=one_day_only)},
+    data = point.timeseries(one_day_only=one_day_only)
+    result = {'data': data}
+    if 'max' in data:
+        result['max'] = data['max']
+        result['min'] = data['min']
+    the_json = json.dumps(result,
                           indent=2)
     return HttpResponse(the_json, mimetype='application/json')
 
