@@ -532,7 +532,7 @@ class Point(Common):
         keys = [key for key in self.metadata.keys()
                 if not key.startswith('DF_') or key == 'Date']
         if 'F_DECAY' in keys and 'STPH' in keys:
-            keys.pop('F_DECAY')  # Temp hack.
+            keys.remove('F_DECAY')  # Temp hack.
         if len(keys) == 1:
             last_value_key = keys[0]
             last_value = self.metadata[last_value_key]
