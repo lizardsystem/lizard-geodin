@@ -513,7 +513,7 @@ class Point(Common):
         for timestep in the_json:
             date = timestep.pop('Date')
             if not 'Z' in date:
-                date = date  + "Z"  # Assumption: we're in UTC.
+                date = date + "Z"  # Assumption: we're in UTC.
             date = dateutil.parser.parse(date)
             # ^^^ Add TZ offset to correct the timezone differences.
             if date < cutoff_date:
@@ -529,14 +529,18 @@ class Point(Common):
 
     def last_value(self):
         """Return last known value."""
-        if (self.metadata is not None) and (len(self.metadata) == 2):
-            # Date and a second key.
-            keys = [key for key in self.metadata.keys()
-                   if key != 'Date']
-            if len(keys) == 1:
-                # Yep, we've got only one.
-                last_value_key = keys[0]
-                return self.metadata[last_value_key]
+        keys = [key for key in self.metadata.keys()
+                if not key.startswith('DF_') or key == 'Date']
+        if 'F_DECAY' in keys and 'STPH' in keys:
+            keys.pop('F_DECAY')  # Temp hack.
+        if len(keys) == 1:
+            last_value_key = keys[0]
+            last_value = self.metadata[last_value_key]
+            try:
+                last_value = float(last_value)
+                return last_value
+            except ValueError:
+                pass
         # Fallback: grab the json.
         the_json = self.json_from_source_url()
         last_timestep = the_json[-1]
@@ -555,4 +559,3 @@ class Point(Common):
                 self.name, self.slug)
         except:
             return self.name or self.slug
-
