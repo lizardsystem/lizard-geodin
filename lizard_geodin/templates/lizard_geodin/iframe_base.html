@@ -1,6 +1,6 @@
 {% load utility i18n compress %}
 <!DOCTYPE html>
-<html>
+<html style="overflow: auto;">
   <head>
     <title>
       {% block title %}
@@ -14,7 +14,7 @@
         {% endif %}
       {% endblock title %}
     </title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0" /> -->
 	<meta charset="utf-8">
     <link rel="icon" href="{{ STATIC_URL }}lizard_ui/favicon.ico" type="images/x-icon" />
     <link rel="SHORTCUT ICON" href="{{ STATIC_URL }}lizard_ui/favicon.ico" />
@@ -38,10 +38,10 @@
               type="text/css"
               media="screen, projection" />
         {# Sprites: all icons (print, info, etc) in one cacheable image. #}
-        <link rel="stylesheet"
-              href="{{ STATIC_URL }}sprites/sprite.css"
-              type="text/css"
-              media="screen, projection" />
+        <!-- <link rel="stylesheet" -->
+        <!--       href="{{ STATIC_URL }}sprites/sprite.css" -->
+        <!--       type="text/css" -->
+        <!--       media="screen, projection" /> -->
         {# CSS for jquery-treeview #}
         <!--
         <link type="text/css"
