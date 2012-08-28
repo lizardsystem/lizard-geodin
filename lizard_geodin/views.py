@@ -208,10 +208,17 @@ class PointListView(ViewContextMixin, TemplateView):
         return result
 
     def points(self):
-        points = models.Point.objects.all()
         slugs = self.request.GET.getlist('slug')
+        # if slugs:
+        #     points = points.filter(slug__in=slugs)
+
+        # The points must be in the correct order.
         if slugs:
-            points = points.filter(slug__in=slugs)
+            points = []
+            for slug in slugs:
+                points.append(get_object_or_404(models.Point, slug=slug))
+        else:
+            points = models.Point.objects.all()
         points = self.filter_request_points(points)
         return points
 
