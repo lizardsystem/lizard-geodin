@@ -1,6 +1,5 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
 from __future__ import unicode_literals
-import datetime
 from collections import defaultdict
 import json
 
@@ -9,7 +8,6 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
 from django.views.generic.base import TemplateView
-import pytz
 
 from lizard_ui.layout import Action
 from lizard_ui.views import UiView
