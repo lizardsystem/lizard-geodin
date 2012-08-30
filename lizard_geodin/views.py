@@ -4,6 +4,7 @@ from collections import defaultdict
 import json
 
 # from lizard_map.views import MapView
+from django.core.cache import cache
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
@@ -154,14 +155,19 @@ class MeasurementView(UiView):
 
 def point_flot_data(request, point_id=None):
     one_day_only = bool(request.GET.get('one_day_only'))
-    point = get_object_or_404(models.Point, pk=int(point_id))
-    data = point.timeseries(one_day_only=one_day_only)
-    result = {'data': data}
-    if data and 'max' in data[0]:
-        result['max'] = data[0]['max']
-        result['min'] = data[0]['min']
-    the_json = json.dumps(result,
-                          indent=2)
+    cache_key = 'flot_data_{one}_{id}'.format(one=one_day_only,
+                                              id=point_id)
+    the_json = cache.get(cache_key)
+    if the_json is None:
+        point = get_object_or_404(models.Point, pk=int(point_id))
+        data = point.timeseries(one_day_only=one_day_only)
+        result = {'data': data}
+        if data and 'max' in data[0]:
+            result['max'] = data[0]['max']
+            result['min'] = data[0]['min']
+        the_json = json.dumps(result,
+                              indent=2)
+        cache.set(cache_key, the_json, 30)
     return HttpResponse(the_json, mimetype='application/json')
 
 
