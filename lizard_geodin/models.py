@@ -66,7 +66,7 @@ class Common(models.Model):
     # The common fields.
     name = models.CharField(
         _('name'),
-        max_length=50,  # Geodin has 40 max.
+        max_length=250,  # Geodin has 40 max.
         null=True,
         blank=True)
     slug = models.SlugField(
@@ -348,17 +348,17 @@ class Measurement(models.Model):
         related_name='measurements')
     location_type_name = models.CharField(
         _('location type'),
-        max_length=50,
+        max_length=250,
         null=True,
         blank=True)
     investigation_type_name = models.CharField(
         _('location type'),
-        max_length=50,
+        max_length=250,
         null=True,
         blank=True)
     data_type_name = models.CharField(
         _('location type'),
-        max_length=50,
+        max_length=250,
         null=True,
         blank=True)
     supplier = models.ForeignKey(
