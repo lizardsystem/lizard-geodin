@@ -375,6 +375,7 @@ class Measurement(models.Model):
     class Meta:
         verbose_name = _('measurement')
         verbose_name_plural = _('measurements')
+        ordering = ['project', 'supplier', 'name']
 
     def __unicode__(self):
         return self.name
