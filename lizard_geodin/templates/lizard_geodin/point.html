@@ -28,7 +28,7 @@
                 src="/static_media/jquery-flot/jquery.flot.axislabels.js"></script>
 
 {% if view.point %}
-
+<div style="display: block; margin-left: auto; margin-right: auto; width: {{ view.width }}px; ">
     <div><b>{{ view.point.measurement.parameter.name }} ({{ view.point.measurement.parameer.unit }}) - {{ view.point.measurement.supplier }}</b></div>
     <div style="width: {{ view.width }}px; height: {{ view.height }}px;"
          class="img-use-my-size flot-graph"
@@ -50,6 +50,7 @@
         </a>.
     </p>
     {% endif %}
+  </div>
 {% endif %}
 
 {% endblock %}
