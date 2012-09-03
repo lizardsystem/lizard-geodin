@@ -18,6 +18,8 @@ import requests
 ADAPTER_NAME = 'lizard_geodin_points'
 POINT_JSON_CACHE_TIMEOUT = 120  # In seconds
 FALLBACK_POINT_JSON_CACHE_TIMEOUT = 60 * 60  # One hour.
+CSS_CRITICAL_COLOR = "#ff0000"
+CSS_WARNING_COLOR = "#d66d00"
 
 logger = logging.getLogger(__name__)
 
@@ -518,16 +520,25 @@ class Point(Common):
             if not 'Z' in date:
                 date = date + "Z"  # Assumption: we're in UTC.
             date = dateutil.parser.parse(date)
-            # ^^^ Add TZ offset to correct the timezone differences.
             if date < cutoff_date:
                 continue
             line.append((timestamp_in_ms(date), timestep['Value']))
+        min_time = timestamp_in_ms(cutoff_date)
+        max_time = timestamp_in_ms(now)
         result = [{'label': self.measurement.parameter.name,
                    'data': line,
-                   'min': timestamp_in_ms(cutoff_date),
-                   'max': timestamp_in_ms(now)}]
-        # TODO: needs the unit from the parameter, really, too. This still
-        # needs to be imported, btw.
+                   'min': min_time,
+                   'max': max_time}]
+        if self.warning_level is not None:
+            result.append({'label': _('Warning level'),
+                           'color': CSS_WARNING_COLOR,
+                           'data': [[min_time, self.warning_level],
+                                    [max_time, self.warning_level]]})
+        if self.critical_level is not None:
+            result.append({'label': _('Critical level'),
+                           'color': CSS_CRITICAL_COLOR,
+                           'data': [[min_time, self.critical_level],
+                                    [max_time, self.critical_level]]})
         return result
 
     def last_value(self):
