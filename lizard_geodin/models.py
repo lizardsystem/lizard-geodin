@@ -453,6 +453,8 @@ class Point(Common):
                      'y': 'Ycoord',
                      'z': 'Zcoord',
                      }
+    warning_level = models.FloatField(null=True, blank=True)
+    critical_level = models.FloatField(null=True, blank=True)
     x = models.FloatField(null=True, blank=True)
     y = models.FloatField(null=True, blank=True)
     z = models.FloatField(null=True, blank=True)
