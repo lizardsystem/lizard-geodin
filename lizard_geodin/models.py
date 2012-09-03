@@ -532,11 +532,15 @@ class Point(Common):
         if self.warning_level is not None:
             result.append({'label': 'Waarschuwingsniveau',
                            'color': CSS_WARNING_COLOR,
+                           'lines': {'show': True },
+                           'points': {'show': False },
                            'data': [[min_time, self.warning_level],
                                     [max_time, self.warning_level]]})
         if self.critical_level is not None:
             result.append({'label': 'Kritiek niveau',
                            'color': CSS_CRITICAL_COLOR,
+                           'lines': {'show': True },
+                           'points': {'show': False },
                            'data': [[min_time, self.critical_level],
                                     [max_time, self.critical_level]]})
         return result
