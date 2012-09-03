@@ -530,12 +530,12 @@ class Point(Common):
                    'min': min_time,
                    'max': max_time}]
         if self.warning_level is not None:
-            result.append({'label': _('Warning level'),
+            result.append({'label': 'Waarschuwingsniveau',
                            'color': CSS_WARNING_COLOR,
                            'data': [[min_time, self.warning_level],
                                     [max_time, self.warning_level]]})
         if self.critical_level is not None:
-            result.append({'label': _('Critical level'),
+            result.append({'label': 'Kritiek niveau',
                            'color': CSS_CRITICAL_COLOR,
                            'data': [[min_time, self.critical_level],
                                     [max_time, self.critical_level]]})
