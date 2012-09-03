@@ -69,6 +69,7 @@ class MeasurementAdmin(admin.ModelAdmin):
 
 class PointAdmin(admin.GeoModelAdmin):
     list_display = ('id', 'slug', 'name', 'measurement')
+    list_filter = ('measurement__project', 'measurement__supplier',)
 
 
 class SupplierAdmin(admin.GeoModelAdmin):
