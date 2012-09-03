@@ -1,7 +1,7 @@
 {% extends 'lizard_geodin/iframe_base.html' %}
 
 {% block main-area %}
-<div style="width: 820px; display: block; margin-left: auto; margin-right: auto">
+<div style="width: 720px; display: block; margin-left: auto; margin-right: auto">
 {% for point in view.points %}
 
 {% comment %}
@@ -11,7 +11,7 @@
 {% endcomment %}
 
   <p>{{ point }}</p>
-  <iframe class="point" src="{% url lizard_geodin_point slug=point.slug %}?width=800&height=250&popup=true" frameborder="0" width="920px" height="300px" scrolling="no">IFrame contents</iframe>
+  <iframe class="point" src="{% url lizard_geodin_point slug=point.slug %}?width=700&height=250&popup=true" frameborder="0" width="720px" height="300px" scrolling="no">IFrame contents</iframe>
 {% endfor %}
 </div>
 {% endblock %}
