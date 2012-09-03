@@ -242,7 +242,7 @@ class PointView(ViewContextMixin, TemplateView):
 
     @property
     def width(self):
-        return self.request.GET.get('width', 900)
+        return self.request.GET.get('width', 700)
 
     @property
     def height(self):
