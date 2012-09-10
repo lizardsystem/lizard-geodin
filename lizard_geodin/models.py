@@ -522,7 +522,9 @@ class Point(Common):
             return []
 
         line = []
-        now = datetime.datetime.now(tz=pytz.timezone('Europe/Amsterdam'))
+        # now = datetime.datetime.now(tz=pytz.timezone('Europe/Amsterdam'))
+        now = dateutil.parser.parse('2012-09-08T14:01:00Z')
+        # ^^^ Hardcoded for the fixed demo: afternoon after the collapse.
         if one_day_only:
             cutoff_date = now - datetime.timedelta(days=1)
         else:
