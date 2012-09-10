@@ -186,7 +186,7 @@ class Common(models.Model):
                       FALLBACK_POINT_JSON_CACHE_TIMEOUT)
             logger.debug("Caching json result from API.")
         # Temp hack.
-        self.downloaded_json = result.json
+        self.downloaded_json = result
         logger.info("Saved downloaded json: %r", self)
         self.save()
         return result
