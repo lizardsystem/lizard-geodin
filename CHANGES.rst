@@ -5,6 +5,11 @@ Changelog of lizard-geodin
 0.1 (unreleased)
 ----------------
 
+- Added hardcoded 'now' to the afternoon of the south levee collapse.
+
+- Added temporary cache field for the geodin json input now that the servers
+  will be shut down. Handy for demonstration purposes.
+
 - Added caching for the values json.
 
 - Got the supplier/parameter filtering working.
