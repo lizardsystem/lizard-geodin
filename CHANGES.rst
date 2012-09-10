@@ -2,7 +2,7 @@ Changelog of lizard-geodin
 ===================================================
 
 
-0.1 (unreleased)
+1.0 (2012-09-10)
 ----------------
 
 - Added hardcoded 'now' to the afternoon of the south levee collapse.
