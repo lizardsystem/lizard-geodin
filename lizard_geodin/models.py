@@ -146,7 +146,7 @@ class Common(models.Model):
 
         """
         if self.downloaded_json is not None:
-            logger.info("Using downloaded json for %r", self)
+            logger.debug("Using downloaded json for %r", self)
             return self.downloaded_json
         logger.error("Help, grabbing json from geodin for %r", self)
         if not self.source_url:
