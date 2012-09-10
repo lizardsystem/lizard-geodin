@@ -80,6 +80,11 @@ class Common(models.Model):
         help_text=_("Extra metadata provided by Geodin"),
         null=True,
         blank=True)
+    downloaded_json = JSONField(
+        _('downloaded json'),
+        help_text=_("Last backup version of the soon-to-be-gone geodin json"),
+        null=True,
+        blank=True)
 
     class Meta:
         abstract = True
@@ -140,6 +145,8 @@ class Common(models.Model):
         Set ``from_cache_is_ok`` to False if you want to refresh the cache.
 
         """
+        if self.downloaded_json is not None:
+            return self.downloaded_json
         if not self.source_url:
             raise ValueError("We need a source_url to update ourselves from.")
         cache_key = self.source_url
@@ -178,6 +185,10 @@ class Common(models.Model):
             cache.set(fallback_cache_key, result,
                       FALLBACK_POINT_JSON_CACHE_TIMEOUT)
             logger.debug("Caching json result from API.")
+        # Temp hack.
+        self.downloaded_json = result.json
+        logger.info("Saved downloaded json: %r", self)
+        self.save()
         return result
 
 
